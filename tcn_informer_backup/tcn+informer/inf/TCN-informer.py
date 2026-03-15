@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import os
+from datetime import datetime
 
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, mean_absolute_percentage_error
@@ -415,7 +417,19 @@ plt.title(model_type + ' Result')
 plt.show()
 # 将真实值和预测值合并为一个 DataFrame
 result_df = pd.DataFrame({'真实值': true.flatten(), '预测值': pred.flatten()})
-# 保存 DataFrame 到一个 CSV 文件
-result_df.to_csv('真实值与预测值2.csv', index=False, encoding='utf-8')
+
+# 创建 result 文件夹（如果不存在）
+output_dir = 'result'
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
+
+# 生成带日期时间的文件名
+now = datetime.now().strftime("%Y%m%d_%H%M%S")
+output_filename = f'{now}.csv'
+output_path = os.path.join(output_dir, output_filename)
+
+# 保存 DataFrame 到 CSV 文件
+result_df.to_csv(output_path, index=False, encoding='utf-8')
+
 # 打印保存成功的消息
-print('真实值和预测值已保存到真实值与预测值.csv文件中。')
+print(f'真实值和预测值已保存到 {output_path} 文件中。')
