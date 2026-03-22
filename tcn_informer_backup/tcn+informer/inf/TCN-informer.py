@@ -239,16 +239,19 @@ def cal_eval(y_real, y_pred):
     return df_eval
 
 
-df = pd.read_csv('data\\禹城数据（05年-10年）.csv')
+#df = pd.read_csv('data\\禹城数据（05年-10年）.csv')
+df = pd.read_csv('data\\change_data\\smear_original_freq_processed.csv')
 
 # --- 方向 A 优化：特征工程 (Feature Engineering) ---
 # 1. 滞后项 (Lagged Features): 捕捉生态滞后响应
-for col in ['PAR', 'DA_TAC', 'L1-VWC']:
+#for col in ['PAR', 'DA_TAC', 'L1-VWC']:
+for col in ['PAR', 'AirTemp', 'SoilWatCont']:
     for lag in range(1, 4):
         df[f'{col}_lag{lag}'] = df[col].shift(lag)
 
 # 2. 差分项 (Differential Features): 捕捉环境突变速度
-for col in ['PAR', 'DA_TAC']:
+#for col in ['PAR', 'DA_TAC']:
+for col in ['PAR', 'AirTemp']:
     df[f'{col}_diff'] = df[col].diff()
 
 # 3. 清理 NaN (由于 shift 和 diff 产生)
@@ -282,8 +285,8 @@ data_target = data.iloc[:, -1]  # 更新目标变量引用
 # 时间戳
 df_stamp = df[['date']]
 df_stamp['date'] = pd.to_datetime(df_stamp.date)
-data_stamp = time_features(df_stamp, timeenc=1, freq='B')  # 这一步很关键，注意数据的freq
-
+#data_stamp = time_features(df_stamp, timeenc=1, freq='B')  # 这一步很关键，注意数据的freq
+data_stamp = time_features(df_stamp, timeenc=1, freq='t')  # 这一步很关键，注意数据的freq
 """
 The following frequencies are supported:
     Y   - yearly
@@ -312,7 +315,8 @@ data_test = data_inverse[int(train_set * data_length):, :]  # 这里把训练集
 data_test_mark = data_stamp[int(train_set * data_length):, :]
 
 n_feature = data_dim
-window = 20  # 模型输入序列长度 (从 10 增加到 20 以增强历史背景感知)
+#window = 20  # 模型输入序列长度 (从 10 增加到 20 以增强历史背景感知)
+window = 60
 length_size = 1  # 预测结果的序列长度
 batch_size = 32
 
@@ -362,7 +366,8 @@ class Config:
         self.seq_len = window  # 输入序列长度
         self.label_len = int(window / 2)  # 标签序列长度
         self.pred_len = length_size  # 预测序列长度
-        self.freq = 'b'  # 时间的频率，
+        #self.freq = 'b'  # 时间的频率，
+        self.freq = 't'  # 时间的频率，
         # 模型训练
         self.batch_size = batch_size  # 批次大小
         self.num_epochs = num_epochs  # 训练的轮数
