@@ -1,8 +1,11 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import os
+from datetime import datetime
 
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+from sklearn.decomposition import PCA
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, mean_absolute_percentage_error
 
 import torch
@@ -102,8 +105,9 @@ def model_train(net, train_loader, length_size, optimizer, criterion, num_epochs
             datapoints, labels, datapoints_mark, labels_mark = datapoints.to(device), labels.to(
                 device), datapoints_mark.to(device), labels_mark.to(device)
             optimizer.zero_grad()  # 清空梯度
-            preds = net(datapoints, datapoints_mark, labels, labels_mark, None).squeeze()  # 前向传播
-            labels = labels[:, -length_size:].squeeze()
+            preds = net(datapoints, datapoints_mark, labels, labels_mark, None)  # 前向传播
+            preds = preds[:, -length_size:, -1:] # 仅取目标变量通道
+            labels = labels[:, -length_size:, -1:] # 仅取目标变量通道
             loss = criterion(preds, labels)  # 计算损失
             loss.backward()  # 反向传播
             optimizer.step()  # 更新模型参数
@@ -156,11 +160,12 @@ def model_train_val(net, train_loader, val_loader, length_size, optimizer, crite
 
         net.train()  # 将模型设置为训练模式
         for i, (datapoints, labels, datapoints_mark, labels_mark) in enumerate(train_loader):
-            datapoints, labels, datapoints_mark, labels_mark = datapoints.to(device), labels.to(
-                device), datapoints_mark.to(device), labels_mark.to(device)
+            datapoints, labels, datapoints_mark, labels_mark = datapoints.to(
+                device), labels.to(device), datapoints_mark.to(device), labels_mark.to(device)
             optimizer.zero_grad()  # 清空梯度
-            preds = net(datapoints, datapoints_mark, labels, labels_mark, None).squeeze()  # 前向传播
-            labels = labels[:, -length_size:].squeeze()  # 注意这一步
+            preds = net(datapoints, datapoints_mark, labels, labels_mark, None)
+            preds = preds[:, -length_size:, -1:] # 仅取目标变量通道
+            labels = labels[:, -length_size:, -1:] # 仅取目标变量通道
             loss = criterion(preds, labels)  # 计算损失
             loss.backward()  # 反向传播
             optimizer.step()  # 更新模型参数
@@ -234,17 +239,54 @@ def cal_eval(y_real, y_pred):
     return df_eval
 
 
-df = pd.read_csv('data\\禹城数据（05年）.csv')
+#df = pd.read_csv('data\\禹城数据（05年-10年）.csv')
+df = pd.read_csv('data\\change_data\\smear_original_freq_processed.csv')
+
+# --- 方向 A 优化：特征工程 (Feature Engineering) ---
+# 1. 滞后项 (Lagged Features): 捕捉生态滞后响应
+#for col in ['PAR', 'DA_TAC', 'L1-VWC']:
+for col in ['PAR', 'AirTemp', 'SoilWatCont']:
+    for lag in range(1, 4):
+        df[f'{col}_lag{lag}'] = df[col].shift(lag)
+
+# 2. 差分项 (Differential Features): 捕捉环境突变速度
+#for col in ['PAR', 'DA_TAC']:
+for col in ['PAR', 'AirTemp']:
+    df[f'{col}_diff'] = df[col].diff()
+
+# 3. 清理 NaN (由于 shift 和 diff 产生)
+df.dropna(inplace=True)
+
+# 4. 重新排列列顺序：确保目标变量 'target' 始终在最后一列
+feature_cols = [c for c in df.columns if c not in ['date', 'target']]
+df = df[['date'] + feature_cols + ['target']]
+
 # 注意多变量情况下，目标变量必须为最后一列
-data_dim = df[df.columns.drop('date')].shape[1]  # 一共多少个变量
-data_target = df['Target']  # 预测的目标变量
-data = df[df.columns.drop('date')]  # 选取所有的数据
+data_target = df['target']  # 预测的目标变量
+features = df[feature_cols] # 提取特征列
+
+# --- 方向 B 优化：PCA 降维去噪 (PCA Denoising) ---
+# 1. 标准化 (Standardization): PCA 前必须进行标准化
+scaler_pca = StandardScaler()
+features_scaled = scaler_pca.fit_transform(features)
+
+# 2. 应用 PCA: 保留 95% 的方差，消除特征间的共线性
+pca = PCA(n_components=0.95) 
+features_pca = pca.fit_transform(features_scaled)
+print(f"PCA 降维完成：特征维度从 {features.shape[1]} 降至 {features_pca.shape[1]}")
+
+# 3. 合并 PCA 特征与目标变量
+data_pca = np.hstack((features_pca, data_target.values.reshape(-1, 1)))
+data = pd.DataFrame(data_pca)
+
+data_dim = data.shape[1]  # 动态更新变量总数 (主成分数 + 1个目标变量)
+data_target = data.iloc[:, -1]  # 更新目标变量引用
 
 # 时间戳
 df_stamp = df[['date']]
 df_stamp['date'] = pd.to_datetime(df_stamp.date)
-data_stamp = time_features(df_stamp, timeenc=1, freq='B')  # 这一步很关键，注意数据的freq
-
+#data_stamp = time_features(df_stamp, timeenc=1, freq='B')  # 这一步很关键，注意数据的freq
+data_stamp = time_features(df_stamp, timeenc=1, freq='t')  # 这一步很关键，注意数据的freq
 """
 The following frequencies are supported:
     Y   - yearly
@@ -273,7 +315,8 @@ data_test = data_inverse[int(train_set * data_length):, :]  # 这里把训练集
 data_test_mark = data_stamp[int(train_set * data_length):, :]
 
 n_feature = data_dim
-window = 10  # 模型输入序列长度 改这里的话注意调整model-TCNInformer层的TCN模块122行必须对应
+#window = 20  # 模型输入序列长度 (从 10 增加到 20 以增强历史背景感知)
+window = 60
 length_size = 1  # 预测结果的序列长度
 batch_size = 32
 
@@ -320,10 +363,11 @@ early_patience = 0.2  # 训练迭代的早停比例 即patience=0.25*num_epochs
 class Config:
     def __init__(self):
         # basic
-        self.seq_len = window  # input sequence length
-        self.label_len = int(window / 2)  # start token length
+        self.seq_len = window  # 输入序列长度
+        self.label_len = int(window / 2)  # 标签序列长度
         self.pred_len = length_size  # 预测序列长度
-        self.freq = 'b'  # 时间的频率，
+        #self.freq = 'b'  # 时间的频率，
+        self.freq = 't'  # 时间的频率，
         # 模型训练
         self.batch_size = batch_size  # 批次大小
         self.num_epochs = num_epochs  # 训练的轮数
@@ -358,7 +402,7 @@ config = Config()
 model_type = 'DCATCN-TCNInformer'
 net = TCNInformer.Model(config).to(device)
 
-criterion = nn.MSELoss().to(device)  # 损失函数
+criterion = nn.MSELoss().to(device)  # 损失函数 (回归 MSE 以保证波峰捕捉力度)
 optimizer = optim.Adam(net.parameters(), lr=learning_rate)  # 优化器
 scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=scheduler_patience, verbose=True)  # 学习率调整策略
 
@@ -409,13 +453,30 @@ true, pred = true_uninverse, pred_uninverse
 df_eval = cal_eval(true, pred)  # 评估指标dataframe
 print(df_eval)
 
+# --- 保存结果 ---
+# 创建 result 和 img 文件夹
+output_dir = 'result'
+img_dir = os.path.join(output_dir, 'img')
+if not os.path.exists(img_dir):
+    os.makedirs(img_dir)
+
+# 生成唯一时间戳
+now = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+# 绘制并保存结果图
 df_pred_true = pd.DataFrame({'Predict': pred.flatten(), 'Real': true.flatten()})
-df_pred_true.plot(figsize=(12, 4))
+plt.figure(figsize=(12, 4))
+plt.plot(df_pred_true['Predict'], label='Predict', color='red')
+plt.plot(df_pred_true['Real'], label='Real', color='blue')
 plt.title(model_type + ' Result')
+plt.legend()
+plt.savefig(os.path.join(img_dir, f'{now}.png'))
+print(f'预测结果图已保存到 {os.path.join(img_dir, f"{now}.png")} 中。')
 plt.show()
-# 将真实值和预测值合并为一个 DataFrame
+
+# 保存真实值和预测值到 CSV 文件
+output_filename = f'{now}.csv'
+output_path = os.path.join(output_dir, output_filename)
 result_df = pd.DataFrame({'真实值': true.flatten(), '预测值': pred.flatten()})
-# 保存 DataFrame 到一个 CSV 文件
-result_df.to_csv('真实值与预测值2.csv', index=False, encoding='utf-8')
-# 打印保存成功的消息
-print('真实值和预测值已保存到真实值与预测值.csv文件中。')
+result_df.to_csv(output_path, index=False, encoding='utf-8')
+print(f'真实值和预测值已保存到 {output_path} 文件中。')
