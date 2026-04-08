@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -279,8 +281,8 @@ def data_cleansing(df):
 
 
 # 读取数据 - 切换到长江三角洲 DT 农田数据集（30分钟级）
-data_path = 'data/Yangtze River Delta of China/DT_NEE(20141201-20171130).csv'
-#data_path = 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv'
+#data_path = 'data/Yangtze River Delta of China/DT_NEE(20141201-20171130).csv'
+data_path = 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv'
 dataset_name = os.path.splitext(os.path.basename(data_path))[0]
 
 print(f"开始读取数据集: {data_path} ...")

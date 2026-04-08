@@ -75,8 +75,8 @@ def create_lgbm_dataset(data, window, length_size):
 # ==========================================
 # 3. 读取数据与特征工程 (严格对齐你的预处理)
 # ==========================================
-#data_path = 'data/Yangtze River Delta of China/DT_NEE(20141201-20171130).csv'
-data_path = 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv'
+data_path = 'data/Yangtze River Delta of China/DT_NEE(20141201-20171130).csv'
+#data_path = 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv'
 print(f"开始读取数据集: {data_path} ...")
 df_raw = pd.read_csv(data_path)
 df = data_cleansing(df_raw)
@@ -181,14 +181,20 @@ for step in loop:
 # 这里我们将对所有测试样本的最后一个预测步 (即未来第 48 步) 进行逆变换和对比
 print("\n训练完成，正在反归一化...")
 
-# 重新建立仅针对 Target 的 Scaler (遵循你代码中的处理方式)
-y_data_test_inverse = scaler.fit_transform(np.array(data_target).reshape(-1, 1))
+# 重新建立仅针对 Target 的 Scaler
+# --- 改进：使用原始单位的训练集进行 fit ---
+target_scaler_inv = MinMaxScaler()
+raw_target_train = target_train
+target_scaler_inv.fit(raw_target_train)
 
-# 获取最后一步(最远预测)作为评估标准。如果你想评估平均性能，可以调整切片。
-pred_uninverse = scaler.inverse_transform(Y_pred_scaled[:, -1:])
-true_uninverse = scaler.inverse_transform(Y_test[:, -1:])
+# 获取最后一步(最远预测)作为评估标准
+pred_uninverse = target_scaler_inv.inverse_transform(Y_pred_scaled[:, -1:])
+true_uninverse = target_scaler_inv.inverse_transform(Y_test[:, -1:])
 
-true_final, pred_final = true_uninverse, pred_uninverse
+# 为了与深度学习模型的时间轴完全对齐（跳过开头的 window + length_size - 1 个由于滑动窗口不可达的点）
+shift = window + length_size - 1
+true_final = true_uninverse[shift:]
+pred_final = pred_uninverse[shift:]
 
 df_eval = cal_eval(true_final, pred_final)
 print("\n====== LightGBM 模型评估结果 ======")
@@ -223,10 +229,11 @@ df_eval.to_csv(metrics_path, index=False, encoding='utf-8-sig')
 print(f'[SUCCESS] 评估指标已保存: {metrics_filename}')
 
 # 5. 保存真实值和预测值 (Data) 到专属文件夹
-test_dates = df['date'].iloc[-len(true_final.flatten()):].reset_index(drop=True)
 data_filename = f'{run_folder_name}_data.csv'
 data_path = os.path.join(output_dir, data_filename)
-result_df = pd.DataFrame({'时间': test_dates,'真实值': true_final.flatten(), '预测值': pred_final.flatten()})
+# --- 改进：严谨的时间戳对齐 (与深度学习模型对齐逻辑) ---
+test_dates = df['date'].iloc[train_size + window + length_size - 1 : train_size + window + length_size - 1 + len(true_final)].reset_index(drop=True)
+result_df = pd.DataFrame({'时间': test_dates, '真实值': true_final.ravel(), '预测值': pred_final.ravel()})
 result_df.to_csv(data_path, index=False, encoding='utf-8-sig')
 print(f'[SUCCESS] 预测数据已保存: {data_filename}')
 

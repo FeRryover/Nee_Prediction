@@ -3,13 +3,14 @@ import pandas as pd
 import numpy as np
 import matplotlib
 # 如果画图报错或者不弹窗，请取消注释下面这行代码
-matplotlib.use('TkAgg')
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from datetime import datetime
 
 # 设置全局绘图风格
 plt.style.use('seaborn-v0_8-muted')
-plt.rcParams['font.sans-serif'] = ['SimHei']  # 解决中文显示
+plt.rc('font', family='sans-serif')
+plt.rcParams['font.sans-serif'] = ['DejaVu Sans', 'Arial', 'SimHei', 'sans-serif']
 plt.rcParams['axes.unicode_minus'] = False
 plt.rcParams['font.size'] = 12
 

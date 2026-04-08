@@ -1,8 +1,7 @@
+import matplotlib
+matplotlib.use('Agg')
 import pandas as pd
 import numpy as np
-import matplotlib
-# 如果画图报错或者不弹窗，请取消注释下面这行代码
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import os
 from datetime import datetime
@@ -23,6 +22,8 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader, TensorDataset
 
 plt.rc('font', family='sans-serif')
+plt.rcParams['font.sans-serif'] = ['DejaVu Sans', 'Arial', 'SimHei', 'sans-serif']
+plt.rcParams['axes.unicode_minus'] = False # 解决负号显示
 plt.style.use("ggplot")
 
 # ==========================================
@@ -332,10 +333,10 @@ true = np.concatenate(trues, axis=0)
 true = true[:, :, -1]
 pred = pred[:, :, -1]
 
-# --- 改进：Scaler 只在训练集上 fit ---
-# 重新定义一个针对目标列的 Scaler，确保不利用测试集的极值信息
+# --- 改进：Scaler 应该在原始单位上 fit ---
+# 重新从原始数据中定义一个针对目标列的 Scaler，确保反归一化回到原始单位
 target_scaler = MinMaxScaler()
-target_scaler.fit(target_train) 
+target_scaler.fit(data_target) 
 
 pred_uninverse = target_scaler.inverse_transform(pred[:, -1:])
 true_uninverse = target_scaler.inverse_transform(true[:, -1:])
@@ -365,14 +366,15 @@ metrics_path = os.path.join(output_dir, metrics_filename)
 df_eval.to_csv(metrics_path, index=False, encoding='utf-8-sig')
 print(f'[SUCCESS] 评估指标已保存: {metrics_filename}')
 
-test_dates = df['date'].iloc[-len(true.flatten()):].reset_index(drop=True)
+# --- 改进：严谨的时间戳对齐 ---
+test_dates = df['date'].iloc[val_size + window + length_size - 1 : val_size + window + length_size - 1 + len(true_final)].reset_index(drop=True)
 data_filename = f'{run_folder_name}_data.csv'
 data_path = os.path.join(output_dir, data_filename)
-result_df = pd.DataFrame({'时间': test_dates, '真实值': true.flatten(), '预测值': pred.flatten()})
+result_df = pd.DataFrame({'时间': test_dates, '真实值': true_final, '预测值': pred_final})
 result_df.to_csv(data_path, index=False, encoding='utf-8-sig')
 print(f'[SUCCESS] 预测数据已保存: {data_filename}')
 
-df_pred_true = pd.DataFrame({'Predict': pred.flatten(), 'Real': true.flatten()})
+df_pred_true = pd.DataFrame({'Predict': pred_final, 'Real': true_final})
 plt.figure(figsize=(12, 4))
 plt.plot(df_pred_true['Predict'], label='Predict', color='red', alpha=0.8)
 plt.plot(df_pred_true['Real'], label='Real', color='blue', alpha=0.5)

@@ -1,9 +1,7 @@
+import matplotlib
+matplotlib.use('Agg')
 import pandas as pd
 import numpy as np
-import matplotlib
-
-# 本地运行，保留这行以防弹窗报错
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import os
 from datetime import datetime
@@ -265,8 +263,10 @@ final_pred_point = full_pred[:, -1, :].reshape(-1, 1)
 final_true_point = full_true[:, -1, :].reshape(-1, 1)
 
 # 重新初始化并拟合针对目标列的 Scaler
+# --- 改进：在原始单位的训练集上 fit，还原量纲 ---
 target_scaler = MinMaxScaler()
-target_scaler.fit(data_target)
+raw_target_train = data_full[:train_size, -1:]
+target_scaler.fit(raw_target_train)
 
 # 执行反归一化
 pred_uninverse = target_scaler.inverse_transform(final_pred_point)
@@ -296,10 +296,11 @@ metrics_filename = f'{run_folder_name}_metrics.csv'
 metrics_path = os.path.join(output_dir, metrics_filename)
 df_eval.to_csv(metrics_path, index=False, encoding='utf-8-sig')
 
-test_dates = df['date'].iloc[-len(true.flatten()):].reset_index(drop=True)
+# --- 改进：严谨的时间戳对齐 ---
+test_dates = df['date'].iloc[val_size + window + length_size - 1 : val_size + window + length_size - 1 + len(true)].reset_index(drop=True)
 data_filename = f'{run_folder_name}_data.csv'
 data_path = os.path.join(output_dir, data_filename)
-result_df = pd.DataFrame({'时间': test_dates, '真实值': true.flatten(), '预测值': pred.flatten()})
+result_df = pd.DataFrame({'时间': test_dates, '真实值': true.ravel(), '预测值': pred.ravel()})
 result_df.to_csv(data_path, index=False, encoding='utf-8-sig')
 
 df_pred_true = pd.DataFrame({'Predict': pred.flatten(), 'Real': true.flatten()})

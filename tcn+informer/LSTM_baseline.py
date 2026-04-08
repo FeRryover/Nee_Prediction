@@ -240,8 +240,10 @@ true_2d = true_array.squeeze(-1)
 
 print("\n训练完成，正在反归一化...")
 # 重新建立仅针对 Target 的 Scaler 以进行逆变换
+# --- 改进：在训练集范围上 fit，确保反归一化准确 ---
 scaler_target = MinMaxScaler()
-scaler_target.fit(np.array(data_target).reshape(-1, 1))
+raw_target_train = data_full[:train_size, -1:]
+scaler_target.fit(raw_target_train)
 
 # 获取最后一步(最远预测)作为评估标准
 pred_final = scaler_target.inverse_transform(pred_2d[:, -1:])
@@ -270,14 +272,11 @@ metrics_path = os.path.join(output_dir, metrics_filename)
 df_eval.to_csv(metrics_path, index=False, encoding='utf-8-sig')
 
 # 保存真实值和预测值 (Data)
-test_dates = df['date'].iloc[-len(true_final.flatten()):].reset_index(drop=True)
+# --- 改进：严谨的时间戳对齐 ---
+test_dates = df['date'].iloc[val_size + window + length_size - 1 : val_size + window + length_size - 1 + len(true_final)].reset_index(drop=True)
 data_filename = f'{run_folder_name}_data.csv'
 data_path = os.path.join(output_dir, data_filename)
-result_df = pd.DataFrame({
-    '时间': test_dates,
-    '真实值': true_final.flatten(),
-    '预测值': pred_final.flatten()
-})
+result_df = pd.DataFrame({'时间': test_dates, '真实值': true_final.ravel(), '预测值': pred_final.ravel()})
 result_df.to_csv(data_path, index=False, encoding='utf-8-sig')
 
 # 绘制并保存结果图 (Image)
