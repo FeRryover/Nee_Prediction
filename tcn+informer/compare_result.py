@@ -3,14 +3,13 @@ import pandas as pd
 import numpy as np
 import matplotlib
 # 如果画图报错或者不弹窗，请取消注释下面这行代码
-matplotlib.use('Agg')
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 from datetime import datetime
 
 # 设置全局绘图风格
 plt.style.use('seaborn-v0_8-muted')
-plt.rc('font', family='sans-serif')
-plt.rcParams['font.sans-serif'] = ['DejaVu Sans', 'Arial', 'SimHei', 'sans-serif']
+plt.rcParams['font.sans-serif'] = ['SimHei']  # 解决中文显示
 plt.rcParams['axes.unicode_minus'] = False
 plt.rcParams['font.size'] = 12
 
@@ -19,7 +18,7 @@ plt.rcParams['font.size'] = 12
 # ==========================================
 result_root = 'result'
 # 定义你想对比的模型关键词
-target_models = ['Informer', 'Ablation_TCN', 'Baseline_PatchTST', 'LightGBM', 'LSTM', 'TCN_Informer', 'SOTA_ExoTST']
+target_models = ['GRU', 'ExoTST', 'iTransformer', 'LightGBM', 'LSTM', 'PatchTST', 'Informer', 'TCN', 'TCNInformer']
 target_datasets = ['DT', 'SX']  # 明确区分两个数据集
 
 summary_data = []

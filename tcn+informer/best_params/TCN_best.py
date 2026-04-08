@@ -21,6 +21,11 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_DIR = os.path.dirname(CURRENT_DIR)
+if PROJECT_DIR not in sys.path:
+    sys.path.insert(0, PROJECT_DIR)
+
 # ==========================================
 # 核心修改：导入纯 TCN 模型
 # ==========================================
@@ -32,6 +37,14 @@ plt.rc('font', family='sans-serif')
 plt.style.use("ggplot")
 plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
+
+
+def env_int(name, default):
+    return int(os.getenv(name, str(default)))
+
+
+def env_float(name, default):
+    return float(os.getenv(name, str(default)))
 
 
 def tslib_data_loader(window, length_size, batch_size, data, data_mark, shuffle=True):
@@ -128,7 +141,7 @@ def data_cleansing(df):
 # 数据读取与预处理 (与基线完全一致)
 # ==========================================
 #data_path = 'data/Yangtze River Delta of China/DT_NEE(20141201-20171130).csv'
-data_path = 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv'
+data_path = os.getenv('DATA_PATH', 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv')
 dataset_name = os.path.splitext(os.path.basename(data_path))[0]
 
 df_raw = pd.read_csv(data_path)
@@ -185,11 +198,11 @@ data_train_mark = data_stamp_train
 data_test_mark = data_stamp_test
 data_dim = data_train.shape[1]
 
-window = 96
-length_size = 48
-batch_size = 128
-num_epochs = 100
-learning_rate = 0.0001
+window = env_int('HP_WINDOW', 96)
+length_size = env_int('HP_LENGTH', 48)
+batch_size = env_int('HP_BATCH_SIZE', 64)
+num_epochs = env_int('HP_EPOCHS', 150)
+learning_rate = env_float('HP_LR', 0.0003)
 
 train_loader, x_train, y_train, x_train_mark, y_train_mark = tslib_data_loader(
     window, length_size, batch_size, data_train, data_train_mark, shuffle=True
@@ -212,17 +225,17 @@ class Config:
         self.pred_len = length_size
 
         # 核心对齐参数
-        self.d_model = 64
+        self.d_model = env_int('HP_D_MODEL', 96)
         #self.e_layers = 3   3不能让TCN看完感受野
-        self.e_layers = 5
-        self.dropout = 0.1
+        self.e_layers = env_int('HP_E_LAYERS', 6)
+        self.dropout = env_float('HP_DROPOUT', 0.15)
 
         # 兼容项 (TCN 实际不使用, 但防止代码冲突保留)
         self.task_name = 'short_term_forecast'
 
 
 config = Config()
-model_type = 'TCN'
+model_type = 'TCN_Best'
 net = TCN.Model(config).to(device)
 
 criterion = nn.MSELoss().to(device)
@@ -278,10 +291,10 @@ print(df_eval)
 # ==========================================
 # 结果保存
 # ==========================================
-output_dir = 'result'
+output_dir = 'result_best'
 now = datetime.now().strftime("%Y%m%d_%H%M%S")
 run_folder_name = f"{model_type}_{now}_{dataset_name}"
-output_dir = os.path.join('result', run_folder_name)
+output_dir = os.path.join('result_best', run_folder_name)
 
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)

@@ -12,15 +12,29 @@ from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, m
 from tqdm import tqdm
 
 import torch
+import sys
 import torch.nn as nn
 import torch.optim as optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader, TensorDataset
 
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_DIR = os.path.dirname(CURRENT_DIR)
+if PROJECT_DIR not in sys.path:
+    sys.path.insert(0, PROJECT_DIR)
+
 plt.rc('font', family='Arial')
 plt.style.use("ggplot")
 plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
+
+
+def env_int(name, default):
+    return int(os.getenv(name, str(default)))
+
+
+def env_float(name, default):
+    return float(os.getenv(name, str(default)))
 
 
 def cal_eval(y_real, y_pred):
@@ -63,7 +77,7 @@ def create_gru_dataset(data, window, length_size):
 
 
 #data_path = 'data/Yangtze River Delta of China/DT_NEE(20141201-20171130).csv'
-data_path = 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv'
+data_path = os.getenv('DATA_PATH', 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv')
 
 dataset_name = os.path.splitext(os.path.basename(data_path))[0]
 
@@ -94,15 +108,15 @@ data_target = df[['target']].values
 features = df[feature_cols].values
 
 data_length = len(df)
-train_size = int(0.7 * data_length)
-val_size = int(0.1 * data_length)
+train_size = int(0.6 * data_length)
+val_size = int(0.8 * data_length)
 
 features_train = features[:train_size, :]
-features_val = features[train_size:train_size+val_size, :]
-features_test = features[train_size+val_size:, :]
+features_val = features[train_size:val_size, :]
+features_test = features[val_size:, :]
 target_train = data_target[:train_size, :]
-target_val = data_target[train_size:train_size+val_size, :]
-target_test = data_target[train_size+val_size:, :]
+target_val = data_target[train_size:val_size, :]
+target_test = data_target[val_size:, :]
 
 use_pca = True
 
@@ -130,9 +144,9 @@ data_train = scaler.fit_transform(data_train_raw)
 data_val = scaler.transform(data_val_raw)
 data_test = scaler.transform(data_test_raw)
 
-window = 96
-length_size = 48
-batch_size = 96
+window = env_int('HP_WINDOW', 96)
+length_size = env_int('HP_LENGTH', 48)
+batch_size = env_int('HP_BATCH_SIZE', 64)
 input_size = data_train.shape[1]
 
 print("正在构建 GRU 数据集张量...")
@@ -162,10 +176,10 @@ class GRUForecastModel(nn.Module):
 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-hidden_size = 64
-num_layers = 2
-num_epochs = 120
-learning_rate = 0.0008
+hidden_size = env_int('HP_HIDDEN_SIZE', 128)
+num_layers = env_int('HP_NUM_LAYERS', 2)
+num_epochs = env_int('HP_EPOCHS', 180)
+learning_rate = env_float('HP_LR', 0.0005)
 
 print(f"\n模型配置（保持原版架构）: hidden_size={hidden_size}, num_layers={num_layers}, window={window}")
 print(f"开始在 {device} 上训练优化版 GRU 模型...")
@@ -173,10 +187,10 @@ print(f"开始在 {device} 上训练优化版 GRU 模型...")
 model = GRUForecastModel(input_size, hidden_size, num_layers, length_size).to(device)
 criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.6, patience=10)
+scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=env_int('HP_SCHED_PATIENCE', 12))
 
 best_val_loss = float('inf')
-patience = 18
+patience = env_int('HP_EARLY_PATIENCE', 24)
 patience_counter = 0
 train_losses = []
 val_losses = []
@@ -243,7 +257,7 @@ true_2d = true_array.squeeze(-1)
 
 print("\n训练完成，正在反归一化...")
 scaler_target = MinMaxScaler()
-scaler_target.fit(np.array(data_target).reshape(-1, 1))
+scaler_target.fit(target_train)
 
 pred_final = scaler_target.inverse_transform(pred_2d[:, -1:])
 true_final = scaler_target.inverse_transform(true_2d[:, -1:])
@@ -253,8 +267,8 @@ print("\n====== 优化版 GRU 模型评估结果（保持原版架构）======")
 print(df_eval)
 
 now = datetime.now().strftime("%Y%m%d_%H%M%S")
-run_folder_name = f"GRU_v2_{now}_{dataset_name}"
-output_dir = os.path.join('result', run_folder_name)
+run_folder_name = f"GRU_Best_{now}_{dataset_name}"
+output_dir = os.path.join('result_best', run_folder_name)
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
@@ -266,7 +280,9 @@ metrics_filename = f'{run_folder_name}_metrics.csv'
 metrics_path = os.path.join(output_dir, metrics_filename)
 df_eval.to_csv(metrics_path, index=False, encoding='utf-8-sig')
 
-test_dates = df['date'].iloc[-len(true_final.flatten()):].reset_index(drop=True)
+test_dates = df['date'].iloc[
+    val_size + window + length_size - 1: val_size + window + length_size - 1 + len(true_final)
+].reset_index(drop=True)
 data_filename = f'{run_folder_name}_data.csv'
 data_path = os.path.join(output_dir, data_filename)
 result_df = pd.DataFrame({

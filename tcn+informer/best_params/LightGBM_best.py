@@ -4,6 +4,7 @@ import matplotlib
 matplotlib.use('Agg') # <--- 加上这一行，强制使用独立的弹窗显示图片
 import matplotlib.pyplot as plt
 import os
+import sys
 from datetime import datetime
 import lightgbm as lgb
 
@@ -12,10 +13,23 @@ from sklearn.decomposition import PCA
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, mean_absolute_percentage_error
 from tqdm import tqdm
 
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_DIR = os.path.dirname(CURRENT_DIR)
+if PROJECT_DIR not in sys.path:
+    sys.path.insert(0, PROJECT_DIR)
+
 plt.rc('font', family='sans-serif')
 plt.rcParams['font.sans-serif'] = ['DejaVu Sans', 'Arial', 'SimHei', 'sans-serif']
 plt.rcParams['axes.unicode_minus'] = False
 plt.style.use("ggplot")
+
+
+def env_int(name, default):
+    return int(os.getenv(name, str(default)))
+
+
+def env_float(name, default):
+    return float(os.getenv(name, str(default)))
 
 
 # ==========================================
@@ -76,7 +90,7 @@ def create_lgbm_dataset(data, window, length_size):
 # 3. 读取数据与特征工程 (严格对齐你的预处理)
 # ==========================================
 #data_path = 'data/Yangtze River Delta of China/DT_NEE(20141201-20171130).csv'
-data_path = 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv'
+data_path = os.getenv('DATA_PATH', 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv')
 print(f"开始读取数据集: {data_path} ...")
 df_raw = pd.read_csv(data_path)
 df = data_cleansing(df_raw)
@@ -135,8 +149,8 @@ data_test = scaler.transform(data_test_raw)
 # ==========================================
 # 4. 构建 LightGBM 训练与测试集
 # ==========================================
-window = 96  # 过去 96 步
-length_size = 48  # 预测未来 48 步
+window = env_int('HP_WINDOW', 96)  # 过去 96 步
+length_size = env_int('HP_LENGTH', 48)  # 预测未来 48 步
 
 print("正在构建 LightGBM 数据集矩阵...")
 X_train, Y_train = create_lgbm_dataset(data_train, window, length_size)
@@ -152,16 +166,18 @@ Y_pred_scaled = np.zeros_like(Y_test)  # 用于存放预测结果
 
 # LightGBM 参数 (映射了你深度学习的部分设定)
 lgb_params = {
-    'n_estimators': 300,  # 对应 DL 中的迭代次数
-    'learning_rate': 0.05,  # 树模型学习率通常比 DL 稍大
-    'max_depth': 6,  # 控制过拟合
-    'num_leaves': 31,
+    'n_estimators': env_int('HP_N_ESTIMATORS', 1000),
+    'learning_rate': env_float('HP_LR', 0.03),
+    'max_depth': env_int('HP_MAX_DEPTH', -1),
+    'num_leaves': env_int('HP_NUM_LEAVES', 63),
+    'min_child_samples': env_int('HP_MIN_CHILD_SAMPLES', 20),
+    'reg_lambda': env_float('HP_REG_LAMBDA', 1.0),
     'objective': 'regression',
-    'metric': 'mse',  # 对应你的 nn.MSELoss()
-    'subsample': 0.8,
-    'colsample_bytree': 0.8,
+    'metric': 'mse',
+    'subsample': env_float('HP_SUBSAMPLE', 0.9),
+    'colsample_bytree': env_float('HP_COLSAMPLE', 0.9),
     'random_state': 42,
-    'n_jobs': -1  # 开启多线程加速
+    'n_jobs': -1
 }
 
 print(f"开始训练 {length_size} 个 LightGBM 模型进行多步预测...")
@@ -175,7 +191,7 @@ for step in loop:
     model.fit(
         X_train, Y_train[:, step],
         eval_set=[(X_val, Y_val[:, step])],
-        callbacks=[lgb.early_stopping(stopping_rounds=30, verbose=False)]  # 对应你的 early_patience
+        callbacks=[lgb.early_stopping(stopping_rounds=env_int('HP_EARLY_STOP_ROUNDS', 50), verbose=False)]
     )
 
     # 存入列表，并进行预测
@@ -214,10 +230,10 @@ dataset_name = os.path.splitext(os.path.basename(data_path))[0]
 now = datetime.now().strftime("%Y%m%d_%H%M%S")
 
 # 2. 定义本次运行的专属文件夹名称 (例如: TCNInformer_20231024_153000_DT_NEE)
-run_folder_name = f"LightGBM_{now}_{dataset_name}"
+run_folder_name = f"LightGBM_Best_{now}_{dataset_name}"
 
 # 3. 创建专属文件夹路径 (result/TCNInformer_20231024_153000_DT_NEE)
-output_dir = os.path.join('result', run_folder_name)
+output_dir = os.path.join('result_best', run_folder_name)
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 

@@ -21,6 +21,11 @@ import torch.optim as optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader, TensorDataset
 
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_DIR = os.path.dirname(CURRENT_DIR)
+if PROJECT_DIR not in sys.path:
+    sys.path.insert(0, PROJECT_DIR)
+
 plt.rc('font', family='sans-serif')
 plt.style.use("ggplot")
 
@@ -33,6 +38,14 @@ from utils.timefeatures import time_features
 # 解决画图中文显示问题
 plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
+
+
+def env_int(name, default):
+    return int(os.getenv(name, str(default)))
+
+
+def env_float(name, default):
+    return float(os.getenv(name, str(default)))
 
 
 def tslib_data_loader(window, length_size, batch_size, data, data_mark, shuffle=True):
@@ -167,7 +180,7 @@ def data_cleansing(df):
 # 数据读取与预处理
 # ==========================================
 #data_path = 'data/Yangtze River Delta of China/DT_NEE(20141201-20171130).csv'
-data_path = 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv'
+data_path = os.getenv('DATA_PATH', 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv')
 
 dataset_name = os.path.splitext(os.path.basename(data_path))[0]
 
@@ -222,9 +235,9 @@ data_val_mark = data_stamp[train_size: val_size, :]
 data_test = data_scaled[val_size:, :]
 data_test_mark = data_stamp[val_size:, :]
 
-window = 96
-length_size = 48
-batch_size = 128
+window = env_int('HP_WINDOW', 96)
+length_size = env_int('HP_LENGTH', 48)
+batch_size = env_int('HP_BATCH_SIZE', 64)
 
 print("准备封装 PyTorch DataLoader...")
 train_loader, x_train, y_train, x_train_mark, y_train_mark = tslib_data_loader(
@@ -241,8 +254,8 @@ test_loader, x_test, y_test, x_test_mark, y_test_mark = tslib_data_loader(
 print("测试集 DataLoader 封装完成...")
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-num_epochs = 80
-learning_rate = 0.0001
+num_epochs = env_int('HP_EPOCHS', 120)
+learning_rate = env_float('HP_LR', 0.0002)
 
 # 配置参数
 data_dim = data_scaled.shape[1]
@@ -263,11 +276,11 @@ class Config:
         self.c_out = 1
 
         # iTransformer 参数配置 (针对 19 个 Token 进行轻量化调整以防止过拟合)
-        self.d_model = 64
-        self.n_heads = 4
-        self.dropout = 0.1
-        self.e_layers = 3
-        self.d_ff = 128
+        self.d_model = env_int('HP_D_MODEL', 128)
+        self.n_heads = env_int('HP_N_HEADS', 8)
+        self.dropout = env_float('HP_DROPOUT', 0.1)
+        self.e_layers = env_int('HP_E_LAYERS', 4)
+        self.d_ff = env_int('HP_D_FF', 256)
         self.factor = 5
         self.activation = 'gelu'
         self.output_attention = False
@@ -277,12 +290,12 @@ class Config:
 
 config = Config()
 
-model_type = 'iTransformer'
+model_type = 'iTransformer_Best'
 net = iTransformer.Model(config).to(device)
 
 criterion = nn.MSELoss().to(device)
 optimizer = optim.Adam(net.parameters(), lr=learning_rate)
-scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5)
+scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=env_int('HP_SCHED_PATIENCE', 8))
 
 # 模型训练 (统一使用 model_train_val)
 trained_model, train_loss, val_loss, final_epoch = model_train_val(net, train_loader, val_loader, length_size, 
@@ -327,7 +340,7 @@ print(df_eval)
 # ==========================================
 now = datetime.now().strftime("%Y%m%d_%H%M%S")
 run_folder_name = f"{model_type}_{now}_{dataset_name}"
-output_dir = os.path.join('result', run_folder_name)
+output_dir = os.path.join('result_best', run_folder_name)
 
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)

@@ -1,7 +1,8 @@
 import pandas as pd
 import numpy as np
 import matplotlib
-# 如果画图报错或者不弹窗，请取消注释下面这行代码
+
+# 本地运行，保留这行以防弹窗报错
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import os
@@ -21,17 +22,30 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_DIR = os.path.dirname(CURRENT_DIR)
+if PROJECT_DIR not in sys.path:
+    sys.path.insert(0, PROJECT_DIR)
+
 # ==========================================
-# 核心修改：导入纯 TCN 模型
+# 核心导入：PatchTST 模型
 # ==========================================
-from models import TCN
+from models import PatchTST
 from utils.timefeatures import time_features
 
 # 解决画图中文显示问题
 plt.rc('font', family='sans-serif')
-plt.style.use("ggplot")
-plt.rcParams['font.sans-serif'] = ['SimHei']
+plt.rcParams['font.sans-serif'] = ['DejaVu Sans', 'Arial', 'SimHei', 'sans-serif']
 plt.rcParams['axes.unicode_minus'] = False
+plt.style.use("ggplot")
+
+
+def env_int(name, default):
+    return int(os.getenv(name, str(default)))
+
+
+def env_float(name, default):
+    return float(os.getenv(name, str(default)))
 
 
 def tslib_data_loader(window, length_size, batch_size, data, data_mark, shuffle=True):
@@ -62,36 +76,62 @@ def tslib_data_loader(window, length_size, batch_size, data, data_mark, shuffle=
     return dataloader, x_temp, y_temp, x_temp_mark, y_temp_mark
 
 
-def model_train(net, train_loader, length_size, optimizer, criterion, num_epochs, device):
+def model_train_val(net, train_loader, val_loader, length_size, optimizer, criterion, scheduler, num_epochs, device,
+                    early_patience=0.15, print_train=False):
     train_loss = []
+    val_loss = []
+    early_patience_epochs = int(early_patience * num_epochs)
+    best_val_loss = float('inf')
+    early_stop_counter = 0
 
     for epoch in range(num_epochs):
         total_train_loss = 0
         net.train()
-        loop = tqdm(train_loader, total=len(train_loader), leave=True, desc=f"Epoch [{epoch + 1}/{num_epochs}]")
+        loop = tqdm(train_loader, total=len(train_loader), leave=True, desc=f"Epoch [{epoch+1}/{num_epochs}]")
         for i, (datapoints, labels, datapoints_mark, labels_mark) in enumerate(loop):
-            datapoints, labels, datapoints_mark, labels_mark = datapoints.to(device), labels.to(
-                device), datapoints_mark.to(device), labels_mark.to(device)
-
+            datapoints, labels = datapoints.to(device), labels.to(device)
             optimizer.zero_grad()
-            preds = net(datapoints, datapoints_mark, labels, labels_mark, None)
-            preds = preds[:, -length_size:, -1:]
-            labels = labels[:, -length_size:, -1:]
-
-            loss = criterion(preds, labels)
+            
+            # PatchTST forward (encoder-only)
+            preds = net(datapoints, None, None, None)
+            loss = criterion(preds, labels[:, -length_size:, -1:])
             loss.backward()
             optimizer.step()
-
             total_train_loss += loss.item()
             loop.set_postfix(loss=loss.item())
 
         avg_train_loss = total_train_loss / len(train_loader)
         train_loss.append(avg_train_loss)
 
-        # 优化输出避免错行
-        loop.set_description(f"Epoch [{epoch + 1}/{num_epochs}] Train Loss: {avg_train_loss:.4f}")
+        # 验证集
+        net.eval()
+        with torch.no_grad():
+            total_val_loss = 0
+            for val_x, val_y, val_x_mark, val_y_mark in val_loader:
+                val_x, val_y = val_x.to(device), val_y.to(device)
+                pred_val_y = net(val_x, None, None, None)
+                val_loss_batch = criterion(pred_val_y, val_y[:, -length_size:, -1:])
+                total_val_loss += val_loss_batch.item()
 
-    return net, train_loss
+            avg_val_loss = total_val_loss / len(val_loader)
+            val_loss.append(avg_val_loss)
+            scheduler.step(avg_val_loss)
+
+        if print_train:
+            loop.write(f"Epoch: {epoch + 1}, Train Loss: {avg_train_loss:.4f}, Val Loss: {avg_val_loss:.4f}")
+
+        if avg_val_loss < best_val_loss:
+            best_val_loss = avg_val_loss
+            early_stop_counter = 0
+            torch.save(net.state_dict(), 'patchtst_checkpoint.pth')
+        else:
+            early_stop_counter += 1
+            if early_stop_counter >= early_patience_epochs:
+                loop.write(f'Early stopping triggered at epoch {epoch + 1}.')
+                break
+
+    net.load_state_dict(torch.load('patchtst_checkpoint.pth'))
+    return net, train_loss, val_loss, epoch + 1
 
 
 def cal_eval(y_real, y_pred):
@@ -99,7 +139,7 @@ def cal_eval(y_real, y_pred):
 
     r2 = r2_score(y_real, y_pred)
     mse = mean_squared_error(y_real, y_pred)
-    rmse = np.sqrt(mean_squared_error(y_real, y_pred))
+    rmse = np.sqrt(mse)
     mae = mean_absolute_error(y_real, y_pred)
     mape = mean_absolute_percentage_error(y_real, y_pred) * 100
 
@@ -125,10 +165,10 @@ def data_cleansing(df):
 
 
 # ==========================================
-# 数据读取与预处理 (与基线完全一致)
+# 数据读取与预处理
 # ==========================================
 #data_path = 'data/Yangtze River Delta of China/DT_NEE(20141201-20171130).csv'
-data_path = 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv'
+data_path = os.getenv('DATA_PATH', 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv')
 dataset_name = os.path.splitext(os.path.basename(data_path))[0]
 
 df_raw = pd.read_csv(data_path)
@@ -155,48 +195,36 @@ df_stamp = df[['date']].copy()
 df_stamp['date'] = pd.to_datetime(df_stamp['date'])
 data_stamp = time_features(df_stamp, timeenc=1, freq='h')
 
-data_length = len(df)
-train_size = int(0.6 * data_length)
-val_size = int(0.8 * data_length)
-
-features_train = features[:train_size, :]
-features_test = features[val_size:, :]
-target_train = data_target[:train_size, :]
-target_test = data_target[val_size:, :]
-data_stamp_train = data_stamp[:train_size, :]
-data_stamp_test = data_stamp[val_size:, :]
-
-scaler_pca = StandardScaler()
-features_train_scaled = scaler_pca.fit_transform(features_train)
-features_test_scaled = scaler_pca.transform(features_test)
-
-pca = PCA(n_components=0.95)
-features_train_pca = pca.fit_transform(features_train_scaled)
-features_test_pca = pca.transform(features_test_scaled)
-
-data_train_raw = np.concatenate((features_train_pca, target_train), axis=1)
-data_test_raw = np.concatenate((features_test_pca, target_test), axis=1)
+# 数据合并与归一化 (禁用 PCA，统一特征)
+data_full = np.concatenate((features, data_target), axis=1) # 18特征+1目标
+data_length = len(data_full)
+train_ratio, val_ratio = 0.6, 0.8
+train_size = int(train_ratio * data_length)
+val_size = int(val_ratio * data_length)
 
 scaler = MinMaxScaler()
-data_train = scaler.fit_transform(data_train_raw)
-data_test = scaler.transform(data_test_raw)
+data_train_raw = data_full[:train_size, :]
+scaler.fit(data_train_raw)
+data_scaled = scaler.transform(data_full)
 
-data_train_mark = data_stamp_train
-data_test_mark = data_stamp_test
-data_dim = data_train.shape[1]
+data_train = data_scaled[:train_size, :]
+data_train_mark = data_stamp[:train_size, :]
+data_val = data_scaled[train_size: val_size, :]
+data_val_mark = data_stamp[train_size: val_size, :]
+data_test = data_scaled[val_size:, :]
+data_test_mark = data_stamp[val_size:, :]
 
-window = 96
-length_size = 48
-batch_size = 128
-num_epochs = 100
-learning_rate = 0.0001
+window = env_int('HP_WINDOW', 96)
+length_size = env_int('HP_LENGTH', 48)
+batch_size = env_int('HP_BATCH_SIZE', 64)
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+num_epochs = env_int('HP_EPOCHS', 120)
+learning_rate = env_float('HP_LR', 0.0003)
 
-train_loader, x_train, y_train, x_train_mark, y_train_mark = tslib_data_loader(
-    window, length_size, batch_size, data_train, data_train_mark, shuffle=True
-)
-test_loader, x_test, y_test, x_test_mark, y_test_mark = tslib_data_loader(
-    window, length_size, batch_size, data_test, data_test_mark, shuffle=False
-)
+# 准备 DataLoader
+train_loader, _, _, _, _ = tslib_data_loader(window, length_size, batch_size, data_train, data_train_mark, shuffle=True)
+val_loader, _, _, _, _ = tslib_data_loader(window, length_size, batch_size, data_val, data_val_mark, shuffle=False)
+test_loader, _, _, _, _ = tslib_data_loader(window, length_size, batch_size, data_test, data_test_mark, shuffle=False)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -204,6 +232,9 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # ==========================================
 # 配置参数：严格对齐消融实验
 # ==========================================
+# 配置参数
+data_dim = data_scaled.shape[1]
+
 class Config:
     def __init__(self):
         self.enc_in = data_dim
@@ -212,26 +243,25 @@ class Config:
         self.pred_len = length_size
 
         # 核心对齐参数
-        self.d_model = 64
-        #self.e_layers = 3   3不能让TCN看完感受野
-        self.e_layers = 5
-        self.dropout = 0.1
-
-        # 兼容项 (TCN 实际不使用, 但防止代码冲突保留)
-        self.task_name = 'short_term_forecast'
+        self.d_model = env_int('HP_D_MODEL', 128)
+        self.e_layers = env_int('HP_E_LAYERS', 4)
+        self.dropout = env_float('HP_DROPOUT', 0.2)
 
 
 config = Config()
-model_type = 'TCN'
-net = TCN.Model(config).to(device)
+model_type = 'PatchTST_Best'
+net = PatchTST.Model(config).to(device)
 
 criterion = nn.MSELoss().to(device)
 optimizer = optim.Adam(net.parameters(), lr=learning_rate)
 
-# ==========================================
-# 训练与预测
-# ==========================================
-trained_model, train_loss = model_train(net, train_loader, length_size, optimizer, criterion, num_epochs, device)
+# 学习率调度器
+scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=env_int('HP_SCHED_PATIENCE', 8))
+
+# 训练与预测 (采用统一模式)
+trained_model, train_loss, val_loss, final_epoch = model_train_val(net, train_loader, val_loader, length_size, 
+                                                                    optimizer, criterion, scheduler, num_epochs, 
+                                                                    device, print_train=True)
 
 trained_model.eval()
 preds = []
@@ -239,19 +269,9 @@ trues = []
 with torch.no_grad():
     for x, y, x_mark, y_mark in test_loader:
         x, y, x_mark, y_mark = x.to(device), y.to(device), x_mark.to(device), y_mark.to(device)
-        outputs = trained_model(x, x_mark, y, y_mark)
+        outputs = trained_model(x, None, None, None)
         preds.append(outputs.detach().cpu().numpy())
         trues.append(y[:, -length_size:, -1:].detach().cpu().numpy())
-
-
-# pred = np.concatenate(preds, axis=0)[:, :, -1]
-# true = np.concatenate(trues, axis=0)[:, :, -1]
-#
-# # 使用目标列的 Scaler 进行精确反归一化
-# target_scaler = MinMaxScaler()
-# target_scaler.fit(data_target)
-# pred_uninverse = target_scaler.inverse_transform(pred[:, -1:])
-# true_uninverse = target_scaler.inverse_transform(true[:, -1:])
 
 # 合并所有 Batch -> 形状 [样本总数, 48, 1]
 full_pred = np.concatenate(preds, axis=0)
@@ -264,7 +284,7 @@ final_true_point = full_true[:, -1, :].reshape(-1, 1)
 
 # 重新初始化并拟合针对目标列的 Scaler
 target_scaler = MinMaxScaler()
-target_scaler.fit(target_train)
+target_scaler.fit(data_target[:train_size])
 
 # 执行反归一化
 pred_uninverse = target_scaler.inverse_transform(final_pred_point)
@@ -278,25 +298,23 @@ print(df_eval)
 # ==========================================
 # 结果保存
 # ==========================================
-output_dir = 'result'
+output_dir = 'result_best'
 now = datetime.now().strftime("%Y%m%d_%H%M%S")
 run_folder_name = f"{model_type}_{now}_{dataset_name}"
-output_dir = os.path.join('result', run_folder_name)
+output_dir = os.path.join('result_best', run_folder_name)
 
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
 print(f"\n==========================================")
-print(f"[INFO] 纯 TCN 消融实验结果将保存在: {output_dir}")
+print(f"[INFO] 结果将保存在: {output_dir}")
 print(f"==========================================")
 
 metrics_filename = f'{run_folder_name}_metrics.csv'
 metrics_path = os.path.join(output_dir, metrics_filename)
 df_eval.to_csv(metrics_path, index=False, encoding='utf-8-sig')
 
-test_dates = df['date'].iloc[
-    val_size + window + length_size - 1: val_size + window + length_size - 1 + len(true)
-].reset_index(drop=True)
+test_dates = df['date'].iloc[-len(true.flatten()):].reset_index(drop=True)
 data_filename = f'{run_folder_name}_data.csv'
 data_path = os.path.join(output_dir, data_filename)
 result_df = pd.DataFrame({'时间': test_dates, '真实值': true.flatten(), '预测值': pred.flatten()})
@@ -312,4 +330,6 @@ plt.legend()
 img_filename = f'{run_folder_name}.png'
 img_save_path = os.path.join(output_dir, img_filename)
 plt.savefig(img_save_path, bbox_inches='tight')
+
+# 恢复本地跑图时的弹窗功能
 plt.show()

@@ -21,18 +21,25 @@ import torch.optim as optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader, TensorDataset
 
-plt.rc('font', family='sans-serif')
-plt.style.use("ggplot")
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_DIR = os.path.dirname(CURRENT_DIR)
+if PROJECT_DIR not in sys.path:
+    sys.path.insert(0, PROJECT_DIR)
 
-# ==========================================
-# 核心修改 1：导入 iTransformer
-# ==========================================
-from models import iTransformer
+from models import ExoTST
 from utils.timefeatures import time_features
 
 # 解决画图中文显示问题
 plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
+
+
+def env_int(name, default):
+    return int(os.getenv(name, str(default)))
+
+
+def env_float(name, default):
+    return float(os.getenv(name, str(default)))
 
 
 def tslib_data_loader(window, length_size, batch_size, data, data_mark, shuffle=True):
@@ -84,7 +91,7 @@ def model_train_val(net, train_loader, val_loader, length_size, optimizer, crite
                 device), datapoints_mark.to(device), labels_mark.to(device)
             optimizer.zero_grad()
             
-            # iTransformer 模型 (不使用 labels 作为解码器输入)
+            # ExoTST 保持原样 (因为它内部会切片)
             preds = net(datapoints, datapoints_mark, labels, labels_mark, None)
             preds = preds[:, -length_size:, -1:]
             labels = labels[:, -length_size:, -1:]
@@ -166,8 +173,8 @@ def data_cleansing(df):
 # ==========================================
 # 数据读取与预处理
 # ==========================================
-#data_path = 'data/Yangtze River Delta of China/DT_NEE(20141201-20171130).csv'
-data_path = 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv'
+data_path = os.getenv('DATA_PATH', 'data/Yangtze River Delta of China/DT_NEE(20141201-20171130).csv')
+#data_path = 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv'
 
 dataset_name = os.path.splitext(os.path.basename(data_path))[0]
 
@@ -181,7 +188,7 @@ print(f"数据清洗完成, 清洗后形状: {df.shape}")
 if 'Target' in df.columns:
     df.rename(columns={'Target': 'target'}, inplace=True)
 
-# 特征工程
+# 特征工程 (保持简单，依赖模型自身融合)
 for col in ['K↓', 'Tair', 'VPD']:
     for lag in range(1, 4):
         df[f'{col}_lag{lag}'] = df[col].shift(lag)
@@ -193,15 +200,15 @@ print("特征工程完成(滞后+差分)...")
 df.dropna(inplace=True)
 df.reset_index(drop=True, inplace=True)
 
-feature_cols = [c for c in df.columns if c not in ['date', 'target']]
-data_target = df[['target']].values
-features = df[feature_cols].values
-
-print("特征和目标变量提取完成，准备时间特征编码...")
+# 准备时间标签
 df_stamp = df[['date']].copy()
 df_stamp['date'] = pd.to_datetime(df_stamp['date'])
 data_stamp = time_features(df_stamp, timeenc=1, freq='h')
-print("时间特征编码完成...")
+
+# 特征提取
+feature_cols = [c for c in df.columns if c not in ['date', 'target']]
+data_target = df[['target']].values
+features = df[feature_cols].values
 
 # 数据合并与归一化
 data_full = np.concatenate((features, data_target), axis=1) # 18特征+1目标
@@ -222,27 +229,20 @@ data_val_mark = data_stamp[train_size: val_size, :]
 data_test = data_scaled[val_size:, :]
 data_test_mark = data_stamp[val_size:, :]
 
-window = 96
-length_size = 48
-batch_size = 128
-
-print("准备封装 PyTorch DataLoader...")
-train_loader, x_train, y_train, x_train_mark, y_train_mark = tslib_data_loader(
-    window, length_size, batch_size, data_train, data_train_mark, shuffle=True
-)
-print("训练集 DataLoader 封装完成...")
-val_loader, x_val, y_val, x_val_mark, y_val_mark = tslib_data_loader(
-    window, length_size, batch_size, data_val, data_val_mark, shuffle=False
-)
-print("验证集 DataLoader 封装完成...")
-test_loader, x_test, y_test, x_test_mark, y_test_mark = tslib_data_loader(
-    window, length_size, batch_size, data_test, data_test_mark, shuffle=False
-)
-print("测试集 DataLoader 封装完成...")
-
+window = env_int('HP_WINDOW', 96)
+length_size = env_int('HP_LENGTH', 48)
+batch_size = env_int('HP_BATCH_SIZE', 64)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-num_epochs = 80
-learning_rate = 0.0001
+num_epochs = env_int('HP_EPOCHS', 120)
+learning_rate = env_float('HP_LR', 0.0002)
+
+# 准备 DataLoader
+train_loader, _, _, _, _ = tslib_data_loader(window, length_size, batch_size, data_train, data_train_mark, shuffle=True)
+val_loader, _, _, _, _ = tslib_data_loader(window, length_size, batch_size, data_val, data_val_mark, shuffle=False)
+test_loader, _, _, _, _ = tslib_data_loader(window, length_size, batch_size, data_test, data_test_mark, shuffle=False)
+
+
+
 
 # 配置参数
 data_dim = data_scaled.shape[1]
@@ -250,76 +250,65 @@ data_dim = data_scaled.shape[1]
 class Config:
     def __init__(self):
         self.seq_len = window
-        self.label_len = int(window / 2)
         self.pred_len = length_size
-        self.freq = 'h'
-
-        self.batch_size = batch_size
-        self.num_epochs = num_epochs
-        self.learning_rate = learning_rate
-
-        self.dec_in = data_dim
-        self.enc_in = data_dim
-        self.c_out = 1
-
-        # iTransformer 参数配置 (针对 19 个 Token 进行轻量化调整以防止过拟合)
-        self.d_model = 64
-        self.n_heads = 4
-        self.dropout = 0.1
-        self.e_layers = 3
-        self.d_ff = 128
+        self.enc_in = data_train.shape[1]
+        self.d_model = env_int('HP_D_MODEL', 192)
+        self.n_heads = env_int('HP_N_HEADS', 8)
+        self.e_layers = env_int('HP_E_LAYERS', 4)
+        self.d_ff = env_int('HP_D_FF', 384)
+        self.dropout = env_float('HP_DROPOUT', 0.15)
         self.factor = 5
         self.activation = 'gelu'
         self.output_attention = False
         self.task_name = 'long_term_forecast'
         self.embed = 'timeF'
+        self.freq = 'h'
 
 
 config = Config()
-
-model_type = 'iTransformer'
-net = iTransformer.Model(config).to(device)
+model_type = 'ExoTST_Best'
+net = ExoTST.Model(config).to(device)
 
 criterion = nn.MSELoss().to(device)
 optimizer = optim.Adam(net.parameters(), lr=learning_rate)
-scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5)
+scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=env_int('HP_SCHED_PATIENCE', 8))
 
-# 模型训练 (统一使用 model_train_val)
+# 模型训练 (采用统一的 model_train_val)
 trained_model, train_loss, val_loss, final_epoch = model_train_val(net, train_loader, val_loader, length_size, 
                                                                     optimizer, criterion, scheduler, num_epochs,
                                                                     device, print_train=True)
 
+# 评估
 trained_model.eval()
 preds = []
 trues = []
 with torch.no_grad():
     for x, y, x_mark, y_mark in test_loader:
         x, y, x_mark, y_mark = x.to(device), y.to(device), x_mark.to(device), y_mark.to(device)
-        
-        # --- 核心改进：解决数据泄露问题 ---
-        y_masked = y.clone()
-        y_masked[:, -length_size:, -1] = 0  
-        
-        outputs = trained_model(x, x_mark, y_masked, y_mark)
+        outputs = trained_model(x, x_mark, y, y_mark)
         preds.append(outputs.detach().cpu().numpy())
         trues.append(y[:, -length_size:, -1:].detach().cpu().numpy())
 
 pred = np.concatenate(preds, axis=0)
 true = np.concatenate(trues, axis=0)
 
+# 取出预测和真实的目标列 (最后一列)
 true = true[:, :, -1]
 pred = pred[:, :, -1]
 
-# --- 改进：Scaler 只在训练集上 fit ---
-target_scaler = MinMaxScaler()
-target_scaler.fit(data_target[:train_size])
+# 反归一化
+# --- 改进：必须在原始单位的训练集上 fit，才能正确还原量纲 ---
+y_scaler = MinMaxScaler()
+y_scaler.fit(data_target[:train_size])
 
-pred_uninverse = target_scaler.inverse_transform(pred[:, -1:])
-true_uninverse = target_scaler.inverse_transform(true[:, -1:])
+pred_uninverse = y_scaler.inverse_transform(pred.reshape(-1, 1)).reshape(pred.shape)
+true_uninverse = y_scaler.inverse_transform(true.reshape(-1, 1)).reshape(true.shape)
 
-true, pred = true_uninverse, pred_uninverse
+# 我们只看最后一个步长的预测结果进行 R2 评估 (或者全序列)
+true_final = true_uninverse[:, -1]
+pred_final = pred_uninverse[:, -1]
 
-df_eval = cal_eval(true, pred)
+df_eval = cal_eval(true_final, pred_final)
 print(df_eval)
 
 # ==========================================
@@ -327,25 +316,20 @@ print(df_eval)
 # ==========================================
 now = datetime.now().strftime("%Y%m%d_%H%M%S")
 run_folder_name = f"{model_type}_{now}_{dataset_name}"
-output_dir = os.path.join('result', run_folder_name)
-
-if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
+output_dir = os.path.join('result_best', run_folder_name)
+if not os.path.exists(output_dir): os.makedirs(output_dir)
 
 print(f"\n[INFO] 结果将保存在: {output_dir}")
-
-metrics_filename = f'{run_folder_name}_metrics.csv'
-df_eval.to_csv(os.path.join(output_dir, metrics_filename), index=False, encoding='utf-8-sig')
+df_eval.to_csv(os.path.join(output_dir, f'{run_folder_name}_metrics.csv'), index=False, encoding='utf-8-sig')
 
 # --- 改进：严谨的时间戳对齐 ---
-test_dates = df['date'].iloc[val_size + window + length_size - 1 : val_size + window + length_size - 1 + len(true)].reset_index(drop=True)
-data_filename = f'{run_folder_name}_data.csv'
-result_df = pd.DataFrame({'时间': test_dates, '真实值': true.flatten(), '预测值': pred.flatten()})
-result_df.to_csv(os.path.join(output_dir, data_filename), index=False, encoding='utf-8-sig')
+test_dates = df['date'].iloc[val_size + window + length_size - 1 : val_size + window + length_size - 1 + len(true_final)].reset_index(drop=True)
+result_df = pd.DataFrame({'时间': test_dates, '真实值': true_final, '预测值': pred_final})
+result_df.to_csv(os.path.join(output_dir, f'{run_folder_name}_data.csv'), index=False, encoding='utf-8-sig')
 
 plt.figure(figsize=(12, 4))
-plt.plot(true.flatten(), label='Real', color='blue', alpha=0.5)
-plt.plot(pred.flatten(), label='Predict', color='red', alpha=0.8)
+plt.plot(true_final, label='Real', color='blue', alpha=0.5)
+plt.plot(pred_final, label='Predict', color='red', alpha=0.8)
 plt.title(f'{model_type} Result ({dataset_name})')
 plt.legend()
 plt.savefig(os.path.join(output_dir, f'{run_folder_name}.png'), bbox_inches='tight')

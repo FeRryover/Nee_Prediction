@@ -1,7 +1,7 @@
-import matplotlib
-matplotlib.use('Agg')
 import pandas as pd
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')  # 强制使用无GUI后端，解决PyCharm绘图报错
 import matplotlib.pyplot as plt
 import os
 from datetime import datetime
@@ -34,7 +34,7 @@ plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
 
 
-def tslib_data_loader(window, length_size, batch_size, data, data_mark):
+def tslib_data_loader(window, length_size, batch_size, data, data_mark, shuffle=True):
     """
     数据加载器函数，用于加载和预处理时间序列数据，以用于训练模型。
 
@@ -86,7 +86,7 @@ def tslib_data_loader(window, length_size, batch_size, data, data_mark):
     y_temp_mark = torch.tensor(y_temp_mark).type(torch.float32)
 
     ds = TensorDataset(x_temp, y_temp, x_temp_mark, y_temp_mark)
-    dataloader = DataLoader(ds, batch_size=batch_size, shuffle=True)
+    dataloader = DataLoader(ds, batch_size=batch_size, shuffle=shuffle)
 
     return dataloader, x_temp, y_temp, x_temp_mark, y_temp_mark
 
@@ -281,8 +281,8 @@ def data_cleansing(df):
 
 
 # 读取数据 - 切换到长江三角洲 DT 农田数据集（30分钟级）
-#data_path = 'data/Yangtze River Delta of China/DT_NEE(20141201-20171130).csv'
-data_path = 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv'
+data_path = 'data/Yangtze River Delta of China/DT_NEE(20141201-20171130).csv'
+#data_path = 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv'
 dataset_name = os.path.splitext(os.path.basename(data_path))[0]
 
 print(f"开始读取数据集: {data_path} ...")
@@ -338,52 +338,6 @@ data_stamp = np.concatenate([data_stamp, sin_cos_features], axis=1)
 print(f"时间特征扩充完成 (Sin/Cos): {data_stamp.shape}")
 print("时间特征编码完成...")
 
-# ==========================================
-# --- 核心修复：防止数据泄露 (Data Leakage) ---
-# **绝对要求：必须在调用任何 .fit() 之前切分训练集与测试集**
-# ==========================================
-data_length = len(df)
-train_set = 0.8  # 保留 80% 训练集, 20% 测试集
-train_size = int(train_set * data_length)
-
-features_train = features[:train_size, :]
-features_test = features[train_size:, :]
-target_train = data_target[:train_size, :]
-target_test = data_target[train_size:, :]
-data_stamp_train = data_stamp[:train_size, :]
-data_stamp_test = data_stamp[train_size:, :]
-print("训练/测试集切分完成...")
-
-# --- 方向 B 优化 (隔离模式)：PCA 降维去噪 ---
-# 1. StandardScaler：【只对训练集 fitting，不对测试集学习参数】
-print("开始进行数据标准化与 PCA 降维...")
-scaler_pca = StandardScaler()
-features_train_scaled = scaler_pca.fit_transform(features_train)
-features_test_scaled = scaler_pca.transform(features_test) 
-
-# 数据标准化完成
-print(f"数据标准化完成：使用全部 {features_train_scaled.shape[1]} 维特征。")
-
-# 3. 将 PCA 过滤后的特征和原本的目标变量重新拼接成网络期待的输入矩阵
-print("进行矩阵拼接与 MinMaxScaler 归一化...")
-data_train_raw = np.concatenate((features_train_scaled, target_train), axis=1)
-data_test_raw = np.concatenate((features_test_scaled, target_test), axis=1)
-
-# --- 最终层隔离优化 ---
-# 4. MinMaxScaler 归一化网络整体输入：【全局绝对极值必须局限于训练集】
-scaler = MinMaxScaler()
-data_train = scaler.fit_transform(data_train_raw)
-data_test = scaler.transform(data_test_raw)           
-
-data_train_mark = data_stamp_train
-data_test_mark = data_stamp_test
-data_dim = data_train.shape[1]  # 特征维度 (PCA维数) + 1 个目标维度
-
-n_feature = data_dim
-window = 96  # 输入序列: 过去 2 天的半小时数据 (48 * 2)
-length_size = 48  # 预测未来的序列长度: 未来 1 天 (48 * 1)
-batch_size = 128
-
 # --- V3: 公平归一化 (StandardScaler, Fit 仅在训练集) ---
 data_full = np.concatenate((features, data_target), axis=1) # 18特征+1目标
 data_length = len(data_full)
@@ -397,6 +351,10 @@ scaler.fit(data_train_raw)
 data_scaled = scaler.transform(data_full)
 data_dim = data_scaled.shape[1]
 
+window = 96  # 输入序列: 过去 2 天的半小时数据 (48 * 2)
+length_size = 48  # 预测未来的序列长度: 未来 1 天 (48 * 1)
+batch_size = 128
+
 # 切分数据集
 data_train = data_scaled[:train_size, :]
 data_train_mark = data_stamp[:train_size, :]
@@ -407,11 +365,11 @@ data_test_mark = data_stamp[val_size:, :]
 
 # 封装 DataLoader
 train_loader, x_train, y_train, x_train_mark, y_train_mark = tslib_data_loader(window, length_size, batch_size,
-                                                                               data_train, data_train_mark)
+                                                                data_train, data_train_mark, shuffle=True)
 val_loader, x_val, y_val, x_val_mark, y_val_mark = tslib_data_loader(window, length_size, batch_size, data_val,
-                                                                     data_val_mark)
+                                                        data_val_mark, shuffle=False)
 test_loader, x_test, y_test, x_test_mark, y_test_mark = tslib_data_loader(window, length_size, batch_size, data_test,
-                                                                          data_test_mark)
+                                                            data_test_mark, shuffle=False)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 num_epochs = 80  # 训练迭代次数
 learning_rate = 0.0001  # V6: 稳定学习率
@@ -459,17 +417,17 @@ class Config:
 
 config = Config()
 
-model_type = 'DCATCN-TCNInformer'
+model_type = 'TCNInformer'
 net = TCNInformer.Model(config).to(device)
 
 criterion = nn.MSELoss().to(device)  # 损失函数 (回归 MSE 以保证波峰捕捉力度)
 optimizer = optim.Adam(net.parameters(), lr=learning_rate)
-scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5)
+scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=scheduler_patience)
 
 # 模型训练 (采用统一的 model_train_val)
 trained_model, train_loss, val_loss, final_epoch = model_train_val(net, train_loader, val_loader, length_size, 
                                                                     optimizer, criterion, scheduler, num_epochs,
-                                                                    device, print_train=True)
+                                                                    device, early_patience=early_patience, print_train=True)
 
 """
 trained_model, train_loss, val_loss, final_epoch = model_train_val(
@@ -520,8 +478,7 @@ print("Shape of true after horizon adjustment:", true.shape)
 
 # --- Scaler 只在训练集上 fit (V6 修复 NameError) ---
 target_scaler = StandardScaler()
-target_train = data_train_raw[:, -1:] # 采样原始数据最后一列 NEE
-target_scaler.fit(target_train) 
+target_scaler.fit(data_target[:train_size])
 
 # 反归一化：将整体 [N, 48] 拉平为 [N*48, 1] 进行变换，再恢复形状
 pred_uninverse = target_scaler.inverse_transform(pred.reshape(-1, 1)).reshape(pred.shape)
@@ -548,10 +505,10 @@ if not os.path.exists(img_dir):
 dataset_name = os.path.splitext(os.path.basename(data_path))[0]
 now = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-# 2. 定义本次运行的专属文件夹名称 (例如: TCNInformer_20231024_153000_DT_NEE)
-run_folder_name = f"TCNInformer_{now}_{dataset_name}"
+# 2. 定义本次运行的专属文件夹名称
+run_folder_name = f"{model_type}_{now}_{dataset_name}"
 
-# 3. 创建专属文件夹路径 (result/TCNInformer_20231024_153000_DT_NEE)
+# 3. 创建专属文件夹路径
 output_dir = os.path.join('result', run_folder_name)
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
@@ -568,7 +525,7 @@ print(f'[SUCCESS] 评估指标已保存: {metrics_filename}')
 
 # 5. 保存真实值和预测值 (Data) 到专属文件夹
 # 确保时间轴对齐：取测试集中每一个 window 对应的最后一个预测点的时间
-test_dates = df['date'].iloc[-len(true_plot):].reset_index(drop=True)
+test_dates = df['date'].iloc[val_size + window + length_size - 1 : val_size + window + length_size - 1 + len(true_plot)].reset_index(drop=True)
 data_filename = f'{run_folder_name}_data.csv'
 data_path = os.path.join(output_dir, data_filename)
 result_df = pd.DataFrame({'时间': test_dates,'真实值': true_plot.flatten(), '预测值': pred_plot.flatten()})

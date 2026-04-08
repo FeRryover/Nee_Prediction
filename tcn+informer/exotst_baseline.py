@@ -117,14 +117,12 @@ def model_train_val(net, train_loader, val_loader, length_size, optimizer, crite
         if avg_val_loss < best_val_loss:
             best_val_loss = avg_val_loss
             early_stop_counter = 0
-            torch.save(net.state_dict(), 'exotst_checkpoint.pth')
         else:
             early_stop_counter += 1
             if early_stop_counter >= early_patience_epochs:
                 loop.write(f'Early stopping triggered at epoch {epoch + 1}.')
                 break
 
-    net.load_state_dict(torch.load('exotst_checkpoint.pth'))
     return net, train_loss, val_loss, epoch + 1
 
 
@@ -207,13 +205,15 @@ train_size = int(train_ratio * data_length)
 val_size = int(val_ratio * data_length)
 
 scaler = MinMaxScaler()
-data_inverse = scaler.fit_transform(data_full)
+data_train_raw = data_full[:train_size, :]
+scaler.fit(data_train_raw)
+data_scaled = scaler.transform(data_full)
 
-data_train = data_inverse[:train_size, :]
+data_train = data_scaled[:train_size, :]
 data_train_mark = data_stamp[:train_size, :]
-data_val = data_inverse[train_size: val_size, :]
+data_val = data_scaled[train_size: val_size, :]
 data_val_mark = data_stamp[train_size: val_size, :]
-data_test = data_inverse[val_size:, :]
+data_test = data_scaled[val_size:, :]
 data_test_mark = data_stamp[val_size:, :]
 
 window = 96
@@ -224,15 +224,15 @@ num_epochs = 80
 learning_rate = 0.0001
 
 # 准备 DataLoader
-train_loader, _, _, _, _ = tslib_data_loader(window, length_size, batch_size, data_train, data_train_mark)
-val_loader, _, _, _, _ = tslib_data_loader(window, length_size, batch_size, data_val, data_val_mark)
-test_loader, _, _, _, _ = tslib_data_loader(window, length_size, batch_size, data_test, data_test_mark)
+train_loader, _, _, _, _ = tslib_data_loader(window, length_size, batch_size, data_train, data_train_mark, shuffle=True)
+val_loader, _, _, _, _ = tslib_data_loader(window, length_size, batch_size, data_val, data_val_mark, shuffle=False)
+test_loader, _, _, _, _ = tslib_data_loader(window, length_size, batch_size, data_test, data_test_mark, shuffle=False)
 
 
 
 
 # 配置参数
-data_dim = data_inverse.shape[1]
+data_dim = data_scaled.shape[1]
 
 class Config:
     def __init__(self):
@@ -253,7 +253,7 @@ class Config:
 
 
 config = Config()
-model_type = 'SOTA_ExoTST'
+model_type = 'ExoTST'
 net = ExoTST.Model(config).to(device)
 
 criterion = nn.MSELoss().to(device)
@@ -286,8 +286,7 @@ pred = pred[:, :, -1]
 # 反归一化
 # --- 改进：必须在原始单位的训练集上 fit，才能正确还原量纲 ---
 y_scaler = MinMaxScaler()
-raw_target_train = data_full[:train_size, -1:] 
-y_scaler.fit(raw_target_train)
+y_scaler.fit(data_target[:train_size])
 
 pred_uninverse = y_scaler.inverse_transform(pred.reshape(-1, 1)).reshape(pred.shape)
 true_uninverse = y_scaler.inverse_transform(true.reshape(-1, 1)).reshape(true.shape)

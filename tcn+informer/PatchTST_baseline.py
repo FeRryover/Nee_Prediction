@@ -1,7 +1,9 @@
-import matplotlib
-matplotlib.use('Agg')
 import pandas as pd
 import numpy as np
+import matplotlib
+
+# 本地运行，保留这行以防弹窗报错
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import os
 from datetime import datetime
@@ -33,7 +35,7 @@ plt.rcParams['axes.unicode_minus'] = False
 plt.style.use("ggplot")
 
 
-def tslib_data_loader(window, length_size, batch_size, data, data_mark):
+def tslib_data_loader(window, length_size, batch_size, data, data_mark, shuffle=True):
     seq_len = window
     sequence_length = seq_len + length_size
     num_samples = len(data) - sequence_length + 1
@@ -56,7 +58,7 @@ def tslib_data_loader(window, length_size, batch_size, data, data_mark):
     y_temp_mark = torch.tensor(y_temp_mark).type(torch.float32)
 
     ds = TensorDataset(x_temp, y_temp, x_temp_mark, y_temp_mark)
-    dataloader = DataLoader(ds, batch_size=batch_size, shuffle=True)
+    dataloader = DataLoader(ds, batch_size=batch_size, shuffle=shuffle)
 
     return dataloader, x_temp, y_temp, x_temp_mark, y_temp_mark
 
@@ -188,13 +190,15 @@ train_size = int(train_ratio * data_length)
 val_size = int(val_ratio * data_length)
 
 scaler = MinMaxScaler()
-data_inverse = scaler.fit_transform(data_full)
+data_train_raw = data_full[:train_size, :]
+scaler.fit(data_train_raw)
+data_scaled = scaler.transform(data_full)
 
-data_train = data_inverse[:train_size, :]
+data_train = data_scaled[:train_size, :]
 data_train_mark = data_stamp[:train_size, :]
-data_val = data_inverse[train_size: val_size, :]
+data_val = data_scaled[train_size: val_size, :]
 data_val_mark = data_stamp[train_size: val_size, :]
-data_test = data_inverse[val_size:, :]
+data_test = data_scaled[val_size:, :]
 data_test_mark = data_stamp[val_size:, :]
 
 window = 96
@@ -205,9 +209,9 @@ num_epochs = 80
 learning_rate = 0.0001
 
 # 准备 DataLoader
-train_loader, _, _, _, _ = tslib_data_loader(window, length_size, batch_size, data_train, data_train_mark)
-val_loader, _, _, _, _ = tslib_data_loader(window, length_size, batch_size, data_val, data_val_mark)
-test_loader, _, _, _, _ = tslib_data_loader(window, length_size, batch_size, data_test, data_test_mark)
+train_loader, _, _, _, _ = tslib_data_loader(window, length_size, batch_size, data_train, data_train_mark, shuffle=True)
+val_loader, _, _, _, _ = tslib_data_loader(window, length_size, batch_size, data_val, data_val_mark, shuffle=False)
+test_loader, _, _, _, _ = tslib_data_loader(window, length_size, batch_size, data_test, data_test_mark, shuffle=False)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -216,7 +220,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # 配置参数：严格对齐消融实验
 # ==========================================
 # 配置参数
-data_dim = data_inverse.shape[1]
+data_dim = data_scaled.shape[1]
 
 class Config:
     def __init__(self):
@@ -232,8 +236,11 @@ class Config:
 
 
 config = Config()
-model_type = 'Baseline_PatchTST'
+model_type = 'PatchTST'
 net = PatchTST.Model(config).to(device)
+
+criterion = nn.MSELoss().to(device)
+optimizer = optim.Adam(net.parameters(), lr=learning_rate)
 
 # 学习率调度器
 scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5)
@@ -263,10 +270,8 @@ final_pred_point = full_pred[:, -1, :].reshape(-1, 1)
 final_true_point = full_true[:, -1, :].reshape(-1, 1)
 
 # 重新初始化并拟合针对目标列的 Scaler
-# --- 改进：在原始单位的训练集上 fit，还原量纲 ---
 target_scaler = MinMaxScaler()
-raw_target_train = data_full[:train_size, -1:]
-target_scaler.fit(raw_target_train)
+target_scaler.fit(data_target[:train_size])
 
 # 执行反归一化
 pred_uninverse = target_scaler.inverse_transform(final_pred_point)
@@ -296,11 +301,10 @@ metrics_filename = f'{run_folder_name}_metrics.csv'
 metrics_path = os.path.join(output_dir, metrics_filename)
 df_eval.to_csv(metrics_path, index=False, encoding='utf-8-sig')
 
-# --- 改进：严谨的时间戳对齐 ---
-test_dates = df['date'].iloc[val_size + window + length_size - 1 : val_size + window + length_size - 1 + len(true)].reset_index(drop=True)
+test_dates = df['date'].iloc[-len(true.flatten()):].reset_index(drop=True)
 data_filename = f'{run_folder_name}_data.csv'
 data_path = os.path.join(output_dir, data_filename)
-result_df = pd.DataFrame({'时间': test_dates, '真实值': true.ravel(), '预测值': pred.ravel()})
+result_df = pd.DataFrame({'时间': test_dates, '真实值': true.flatten(), '预测值': pred.flatten()})
 result_df.to_csv(data_path, index=False, encoding='utf-8-sig')
 
 df_pred_true = pd.DataFrame({'Predict': pred.flatten(), 'Real': true.flatten()})

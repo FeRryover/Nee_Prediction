@@ -12,14 +12,28 @@ from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, m
 from tqdm import tqdm
 
 import torch
+import sys
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
+
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_DIR = os.path.dirname(CURRENT_DIR)
+if PROJECT_DIR not in sys.path:
+    sys.path.insert(0, PROJECT_DIR)
 
 plt.rc('font', family='sans-serif')
 plt.rcParams['font.sans-serif'] = ['DejaVu Sans', 'Arial', 'SimHei', 'sans-serif']
 plt.rcParams['axes.unicode_minus'] = False
 plt.style.use("ggplot")
+
+
+def env_int(name, default):
+    return int(os.getenv(name, str(default)))
+
+
+def env_float(name, default):
+    return float(os.getenv(name, str(default)))
 
 
 # ==========================================
@@ -76,7 +90,7 @@ def create_lstm_dataset(data, window, length_size):
 # 3. 读取数据与特征工程 (严格对齐你的预处理)
 # ==========================================
 #data_path = 'data/Yangtze River Delta of China/DT_NEE(20141201-20171130).csv'
-data_path = 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv'
+data_path = os.getenv('DATA_PATH', 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv')
 dataset_name = os.path.splitext(os.path.basename(data_path))[0]
 
 print(f"开始读取数据集: {data_path} ...")
@@ -137,9 +151,9 @@ data_test = scaler.transform(data_test_raw)
 # ==========================================
 # 4. 构建 PyTorch DataLoader
 # ==========================================
-window = 96  # 输入过去 96 步
-length_size = 48  # 预测未来 48 步
-batch_size = 128
+window = env_int('HP_WINDOW', 96)  # 输入过去 96 步
+length_size = env_int('HP_LENGTH', 48)  # 预测未来 48 步
+batch_size = env_int('HP_BATCH_SIZE', 64)
 input_size = data_train.shape[1]  # 特征维度
 
 print("正在构建 LSTM 数据集张量...")
@@ -181,10 +195,10 @@ class LSTMForecastModel(nn.Module):
 # 6. 模型训练配置
 # ==========================================
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-hidden_size = 64
-num_layers = 2
-num_epochs = 100
-learning_rate = 0.001
+hidden_size = env_int('HP_HIDDEN_SIZE', 128)
+num_layers = env_int('HP_NUM_LAYERS', 2)
+num_epochs = env_int('HP_EPOCHS', 180)
+learning_rate = env_float('HP_LR', 0.0005)
 
 model = LSTMForecastModel(input_size, hidden_size, num_layers, length_size).to(device)
 criterion = nn.MSELoss()
@@ -192,7 +206,7 @@ optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
 # 早停机制 (Early Stopping) 基于验证集
 best_val_loss = float('inf')
-patience = 15
+patience = env_int('HP_EARLY_PATIENCE', 20)
 patience_counter = 0
 
 print(f"\n开始在 {device} 上训练 LSTM 模型...")
@@ -275,8 +289,8 @@ print(df_eval)
 # 8. 统一且规范的文件保存逻辑 (专属文件夹版)
 # ==========================================
 now = datetime.now().strftime("%Y%m%d_%H%M%S")
-run_folder_name = f"LSTM_{now}_{dataset_name}"
-output_dir = os.path.join('result', run_folder_name)
+run_folder_name = f"LSTM_Best_{now}_{dataset_name}"
+output_dir = os.path.join('result_best', run_folder_name)
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 

@@ -22,6 +22,11 @@ import torch.optim as optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader, TensorDataset
 
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_DIR = os.path.dirname(CURRENT_DIR)
+if PROJECT_DIR not in sys.path:
+    sys.path.insert(0, PROJECT_DIR)
+
 plt.rc('font', family='sans-serif')
 plt.style.use("ggplot")
 
@@ -34,6 +39,14 @@ from utils.timefeatures import time_features
 # 解决画图中文显示问题
 plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
+
+
+def env_int(name, default):
+    return int(os.getenv(name, str(default)))
+
+
+def env_float(name, default):
+    return float(os.getenv(name, str(default)))
 
 
 def tslib_data_loader(window, length_size, batch_size, data, data_mark, shuffle=True):
@@ -177,7 +190,7 @@ def data_cleansing(df):
 # 数据读取与预处理
 # ==========================================
 #data_path = 'data/Yangtze River Delta of China/DT_NEE(20141201-20171130).csv'
-data_path = 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv'
+data_path = os.getenv('DATA_PATH', 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv')
 dataset_name = os.path.splitext(os.path.basename(data_path))[0]
 
 print(f"开始读取数据集: {data_path} ...")
@@ -232,12 +245,12 @@ data_val_mark = data_stamp[train_size: val_size, :]
 data_test = data_scaled[val_size:, :]
 data_test_mark = data_stamp[val_size:, :]
 
-window = 96
-length_size = 48
-batch_size = 128
+window = env_int('HP_WINDOW', 96)
+length_size = env_int('HP_LENGTH', 48)
+batch_size = env_int('HP_BATCH_SIZE', 64)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-num_epochs = 80
-learning_rate = 0.0001
+num_epochs = env_int('HP_EPOCHS', 120)
+learning_rate = env_float('HP_LR', 0.0002)
 
 # 准备 DataLoader
 train_loader, _, _, _, _ = tslib_data_loader(window, length_size, batch_size, data_train, data_train_mark, shuffle=True)
@@ -277,12 +290,12 @@ class Config:
         # self.factor = 5  # ProbSparse 注意力因子
 
         #与TCN+informer参数对齐
-        self.d_model = 64  # 模型维度
-        self.n_heads = 4  # 多头注意力头数
-        self.dropout = 0.1  # 丢弃率
-        self.e_layers = 3  # 编码器块的数量
-        self.d_layers = 3  # 解码器块的数量
-        self.d_ff = 128  # 全连接网络维度
+        self.d_model = env_int('HP_D_MODEL', 128)  # 模型维度
+        self.n_heads = env_int('HP_N_HEADS', 8)  # 多头注意力头数
+        self.dropout = env_float('HP_DROPOUT', 0.05)  # 丢弃率
+        self.e_layers = env_int('HP_E_LAYERS', 2)  # 编码器块的数量
+        self.d_layers = env_int('HP_D_LAYERS', 1)  # 解码器块的数量
+        self.d_ff = env_int('HP_D_FF', 256)  # 全连接网络维度
         self.factor = 5  # 注意力因子
 
         self.activation = 'gelu'
@@ -298,13 +311,13 @@ config = Config()
 # ==========================================
 # 核心修改 3：使用标准 Informer 初始化
 # ==========================================
-model_type = 'Informer'
+model_type = 'Informer_Best'
 net = Informer.Model(config).to(device)
 
 # 优化器与调度器
 criterion = nn.MSELoss().to(device)
 optimizer = optim.Adam(net.parameters(), lr=learning_rate)
-scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5)
+scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=env_int('HP_SCHED_PATIENCE', 8))
 
 # 模型训练 (统一使用 model_train_val)
 trained_model, train_loss, val_loss, final_epoch = model_train_val(net, train_loader, val_loader, length_size, 
@@ -350,10 +363,10 @@ print(df_eval)
 # ==========================================
 # 结果保存：将记录在 Informer 的文件夹中
 # ==========================================
-output_dir = 'result'
+output_dir = 'result_best'
 now = datetime.now().strftime("%Y%m%d_%H%M%S")
 run_folder_name = f"{model_type}_{now}_{dataset_name}"
-output_dir = os.path.join('result', run_folder_name)
+output_dir = os.path.join('result_best', run_folder_name)
 
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
