@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 import torch
 
 def adjust_learning_rate(optimizer, epoch, args):
@@ -25,6 +26,7 @@ class EarlyStopping:
         self.early_stop = False         ###早停标志
         self.val_loss_min = np.Inf      ###这一行将实例变量val_loss_min设置为正无穷
         self.delta = delta
+        self.best_state_dict = None
 
     def __call__(self, val_loss, model, path):
         score = -val_loss
@@ -44,8 +46,12 @@ class EarlyStopping:
     def save_checkpoint(self, val_loss, model, path):
         if self.verbose:
             print(f'Validation loss decreased ({self.val_loss_min:.6f} --> {val_loss:.6f}).  Saving model ...')
-        torch.save(model.state_dict(), path+'/'+'checkpoint.pth')
+        self.best_state_dict = copy.deepcopy(model.state_dict())
         self.val_loss_min = val_loss
+
+    def load_best_weights(self, model):
+        if self.best_state_dict is not None:
+            model.load_state_dict(self.best_state_dict)
 
 class dotdict(dict):
     """dot.notation access to dictionary attributes"""

@@ -76,7 +76,7 @@ def create_lgbm_dataset(data, window, length_size):
 # 3. 读取数据与特征工程 (严格对齐你的预处理)
 # ==========================================
 #data_path = 'data/Yangtze River Delta of China/DT_NEE(20141201-20171130).csv'
-data_path = 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv'
+data_path = os.getenv('DATA_PATH', 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv')
 print(f"开始读取数据集: {data_path} ...")
 df_raw = pd.read_csv(data_path)
 df = data_cleansing(df_raw)
@@ -110,21 +110,10 @@ target_train = data_target[:train_size, :]
 target_val = data_target[train_size:val_size, :]
 target_test = data_target[val_size:, :]
 
-# PCA 降维过滤
-scaler_pca = StandardScaler()
-features_train_scaled = scaler_pca.fit_transform(features_train)
-features_val_scaled = scaler_pca.transform(features_val)
-features_test_scaled = scaler_pca.transform(features_test)
-
-pca = PCA(n_components=0.95)
-features_train_pca = pca.fit_transform(features_train_scaled)
-features_val_pca = pca.transform(features_val_scaled)
-features_test_pca = pca.transform(features_test_scaled)
-
-# 拼接特征与目标
-data_train_raw = np.concatenate((features_train_pca, target_train), axis=1)
-data_val_raw = np.concatenate((features_val_pca, target_val), axis=1)
-data_test_raw = np.concatenate((features_test_pca, target_test), axis=1)
+# 统一口径：不使用 PCA
+data_train_raw = np.concatenate((features_train, target_train), axis=1)
+data_val_raw = np.concatenate((features_val, target_val), axis=1)
+data_test_raw = np.concatenate((features_test, target_test), axis=1)
 
 # 整体输入归一化
 scaler = MinMaxScaler()
@@ -137,6 +126,9 @@ data_test = scaler.transform(data_test_raw)
 # ==========================================
 window = 96  # 过去 96 步
 length_size = 48  # 预测未来 48 步
+num_epochs = 120  # 与深度学习模型统一的训练预算映射
+learning_rate = 0.0002  # 与深度学习模型统一的学习率口径
+early_patience = 18  # 与深度学习模型统一的早停口径
 
 print("正在构建 LightGBM 数据集矩阵...")
 X_train, Y_train = create_lgbm_dataset(data_train, window, length_size)
@@ -152,8 +144,8 @@ Y_pred_scaled = np.zeros_like(Y_test)  # 用于存放预测结果
 
 # LightGBM 参数 (映射了你深度学习的部分设定)
 lgb_params = {
-    'n_estimators': 300,  # 对应 DL 中的迭代次数
-    'learning_rate': 0.05,  # 树模型学习率通常比 DL 稍大
+    'n_estimators': num_epochs,
+    'learning_rate': learning_rate,
     'max_depth': 6,  # 控制过拟合
     'num_leaves': 31,
     'objective': 'regression',
@@ -175,7 +167,7 @@ for step in loop:
     model.fit(
         X_train, Y_train[:, step],
         eval_set=[(X_val, Y_val[:, step])],
-        callbacks=[lgb.early_stopping(stopping_rounds=30, verbose=False)]  # 对应你的 early_patience
+        callbacks=[lgb.early_stopping(stopping_rounds=early_patience, verbose=False)]
     )
 
     # 存入列表，并进行预测

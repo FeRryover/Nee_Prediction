@@ -173,8 +173,8 @@ def data_cleansing(df):
 # ==========================================
 # 数据读取与预处理
 # ==========================================
-data_path = os.getenv('DATA_PATH', 'data/Yangtze River Delta of China/DT_NEE(20141201-20171130).csv')
-#data_path = 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv'
+data_path = os.getenv('DATA_PATH', 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv')
+#data_path = 'data/Yangtze River Delta of China/DT_NEE(20141201-20171130).csv'
 
 dataset_name = os.path.splitext(os.path.basename(data_path))[0]
 
@@ -285,7 +285,9 @@ trues = []
 with torch.no_grad():
     for x, y, x_mark, y_mark in test_loader:
         x, y, x_mark, y_mark = x.to(device), y.to(device), x_mark.to(device), y_mark.to(device)
-        outputs = trained_model(x, x_mark, y, y_mark)
+        y_masked = y.clone()
+        y_masked[:, -length_size:, -1] = 0
+        outputs = trained_model(x, x_mark, y_masked, y_mark)
         preds.append(outputs.detach().cpu().numpy())
         trues.append(y[:, -length_size:, -1:].detach().cpu().numpy())
 
@@ -316,8 +318,9 @@ print(df_eval)
 # ==========================================
 now = datetime.now().strftime("%Y%m%d_%H%M%S")
 run_folder_name = f"{model_type}_{now}_{dataset_name}"
-output_dir = os.path.join('result_best', run_folder_name)
-if not os.path.exists(output_dir): os.makedirs(output_dir)
+base_output_dir = os.getenv('MODEL_OUTPUT_DIR', 'result_best')
+output_dir = os.path.join(base_output_dir, run_folder_name)
+os.makedirs(output_dir, exist_ok=True)
 
 print(f"\n[INFO] 结果将保存在: {output_dir}")
 df_eval.to_csv(os.path.join(output_dir, f'{run_folder_name}_metrics.csv'), index=False, encoding='utf-8-sig')

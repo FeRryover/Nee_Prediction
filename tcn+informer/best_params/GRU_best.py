@@ -118,7 +118,7 @@ target_train = data_target[:train_size, :]
 target_val = data_target[train_size:val_size, :]
 target_test = data_target[val_size:, :]
 
-use_pca = True
+use_pca = bool(env_int('HP_USE_PCA', 0))
 
 if use_pca:
     scaler_pca = StandardScaler()
@@ -268,9 +268,9 @@ print(df_eval)
 
 now = datetime.now().strftime("%Y%m%d_%H%M%S")
 run_folder_name = f"GRU_Best_{now}_{dataset_name}"
-output_dir = os.path.join('result_best', run_folder_name)
-if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
+base_output_dir = os.getenv('MODEL_OUTPUT_DIR', 'result_best')
+output_dir = os.path.join(base_output_dir, run_folder_name)
+os.makedirs(output_dir, exist_ok=True)
 
 print(f"\n==========================================")
 print(f"[INFO] 本次运行的所有结果将保存在: {output_dir}")

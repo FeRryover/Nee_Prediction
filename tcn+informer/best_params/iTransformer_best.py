@@ -340,10 +340,9 @@ print(df_eval)
 # ==========================================
 now = datetime.now().strftime("%Y%m%d_%H%M%S")
 run_folder_name = f"{model_type}_{now}_{dataset_name}"
-output_dir = os.path.join('result_best', run_folder_name)
-
-if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
+base_output_dir = os.getenv('MODEL_OUTPUT_DIR', 'result_best')
+output_dir = os.path.join(base_output_dir, run_folder_name)
+os.makedirs(output_dir, exist_ok=True)
 
 print(f"\n[INFO] 结果将保存在: {output_dir}")
 

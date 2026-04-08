@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import copy
 import matplotlib
 
 # 本地运行，保留这行以防弹窗报错
@@ -20,6 +21,7 @@ print(f"PyTorch Version: {torch.__version__}")
 sys.stdout.flush()
 import torch.nn as nn
 import torch.optim as optim
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader, TensorDataset
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -82,6 +84,7 @@ def model_train_val(net, train_loader, val_loader, length_size, optimizer, crite
     val_loss = []
     early_patience_epochs = int(early_patience * num_epochs)
     best_val_loss = float('inf')
+    best_state_dict = None
     early_stop_counter = 0
 
     for epoch in range(num_epochs):
@@ -123,14 +126,15 @@ def model_train_val(net, train_loader, val_loader, length_size, optimizer, crite
         if avg_val_loss < best_val_loss:
             best_val_loss = avg_val_loss
             early_stop_counter = 0
-            torch.save(net.state_dict(), 'patchtst_checkpoint.pth')
+            best_state_dict = copy.deepcopy(net.state_dict())
         else:
             early_stop_counter += 1
             if early_stop_counter >= early_patience_epochs:
                 loop.write(f'Early stopping triggered at epoch {epoch + 1}.')
                 break
 
-    net.load_state_dict(torch.load('patchtst_checkpoint.pth'))
+    if best_state_dict is not None:
+        net.load_state_dict(best_state_dict)
     return net, train_loss, val_loss, epoch + 1
 
 
@@ -168,7 +172,8 @@ def data_cleansing(df):
 # 数据读取与预处理
 # ==========================================
 #data_path = 'data/Yangtze River Delta of China/DT_NEE(20141201-20171130).csv'
-data_path = os.getenv('DATA_PATH', 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv')
+data_path_input = os.getenv('DATA_PATH', 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv')
+data_path = data_path_input if os.path.isabs(data_path_input) else os.path.join(PROJECT_DIR, data_path_input)
 dataset_name = os.path.splitext(os.path.basename(data_path))[0]
 
 df_raw = pd.read_csv(data_path)
@@ -298,13 +303,11 @@ print(df_eval)
 # ==========================================
 # 结果保存
 # ==========================================
-output_dir = 'result_best'
 now = datetime.now().strftime("%Y%m%d_%H%M%S")
 run_folder_name = f"{model_type}_{now}_{dataset_name}"
-output_dir = os.path.join('result_best', run_folder_name)
-
-if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
+base_output_dir = os.getenv('MODEL_OUTPUT_DIR', 'result_best')
+output_dir = os.path.join(base_output_dir, run_folder_name)
+os.makedirs(output_dir, exist_ok=True)
 
 print(f"\n==========================================")
 print(f"[INFO] 结果将保存在: {output_dir}")
@@ -314,7 +317,7 @@ metrics_filename = f'{run_folder_name}_metrics.csv'
 metrics_path = os.path.join(output_dir, metrics_filename)
 df_eval.to_csv(metrics_path, index=False, encoding='utf-8-sig')
 
-test_dates = df['date'].iloc[-len(true.flatten()):].reset_index(drop=True)
+test_dates = df['date'].iloc[val_size + window + length_size - 1 : val_size + window + length_size - 1 + len(true)].reset_index(drop=True)
 data_filename = f'{run_folder_name}_data.csv'
 data_path = os.path.join(output_dir, data_filename)
 result_df = pd.DataFrame({'时间': test_dates, '真实值': true.flatten(), '预测值': pred.flatten()})

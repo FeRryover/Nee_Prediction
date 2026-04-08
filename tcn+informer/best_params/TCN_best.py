@@ -19,6 +19,7 @@ print(f"PyTorch Version: {torch.__version__}")
 sys.stdout.flush()
 import torch.nn as nn
 import torch.optim as optim
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader, TensorDataset
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -107,6 +108,68 @@ def model_train(net, train_loader, length_size, optimizer, criterion, num_epochs
     return net, train_loss
 
 
+def model_train_val(net, train_loader, val_loader, length_size, optimizer, criterion, scheduler, num_epochs, device,
+                    early_patience=0.15, print_train=False):
+    train_loss = []
+    val_loss = []
+    early_patience_epochs = int(early_patience * num_epochs)
+    best_val_loss = float('inf')
+    early_stop_counter = 0
+
+    for epoch in range(num_epochs):
+        total_train_loss = 0
+        net.train()
+        loop = tqdm(train_loader, total=len(train_loader), leave=True, desc=f"Epoch [{epoch+1}/{num_epochs}]")
+        for datapoints, labels, datapoints_mark, labels_mark in loop:
+            datapoints, labels = datapoints.to(device), labels.to(device)
+            datapoints_mark, labels_mark = datapoints_mark.to(device), labels_mark.to(device)
+            optimizer.zero_grad()
+
+            preds = net(datapoints, datapoints_mark, labels, labels_mark, None)
+            preds = preds[:, -length_size:, -1:]
+            labels = labels[:, -length_size:, -1:]
+            loss = criterion(preds, labels)
+            loss.backward()
+            optimizer.step()
+
+            total_train_loss += loss.item()
+            loop.set_postfix(loss=loss.item())
+
+        avg_train_loss = total_train_loss / len(train_loader)
+        train_loss.append(avg_train_loss)
+
+        net.eval()
+        with torch.no_grad():
+            total_val_loss = 0
+            for val_x, val_y, val_x_mark, val_y_mark in val_loader:
+                val_x, val_y = val_x.to(device), val_y.to(device)
+                val_x_mark, val_y_mark = val_x_mark.to(device), val_y_mark.to(device)
+                pred_val_y = net(val_x, val_x_mark, val_y, val_y_mark, None)
+                pred_val_y = pred_val_y[:, -length_size:, -1:]
+                val_y_true = val_y[:, -length_size:, -1:]
+                total_val_loss += criterion(pred_val_y, val_y_true).item()
+
+            avg_val_loss = total_val_loss / len(val_loader)
+            val_loss.append(avg_val_loss)
+            scheduler.step(avg_val_loss)
+
+        if print_train:
+            loop.write(f"Epoch: {epoch + 1}, Train Loss: {avg_train_loss:.4f}, Val Loss: {avg_val_loss:.4f}")
+
+        if avg_val_loss < best_val_loss:
+            best_val_loss = avg_val_loss
+            early_stop_counter = 0
+            torch.save(net.state_dict(), 'tcn_best_checkpoint.pth')
+        else:
+            early_stop_counter += 1
+            if early_stop_counter >= early_patience_epochs:
+                loop.write(f'Early stopping triggered at epoch {epoch + 1}.')
+                break
+
+    net.load_state_dict(torch.load('tcn_best_checkpoint.pth'))
+    return net, train_loss, val_loss, epoch + 1
+
+
 def cal_eval(y_real, y_pred):
     y_real, y_pred = np.array(y_real).ravel(), np.array(y_pred).ravel()
 
@@ -173,28 +236,43 @@ train_size = int(0.6 * data_length)
 val_size = int(0.8 * data_length)
 
 features_train = features[:train_size, :]
+features_val = features[train_size:val_size, :]
 features_test = features[val_size:, :]
 target_train = data_target[:train_size, :]
+target_val = data_target[train_size:val_size, :]
 target_test = data_target[val_size:, :]
 data_stamp_train = data_stamp[:train_size, :]
+data_stamp_val = data_stamp[train_size:val_size, :]
 data_stamp_test = data_stamp[val_size:, :]
 
-scaler_pca = StandardScaler()
-features_train_scaled = scaler_pca.fit_transform(features_train)
-features_test_scaled = scaler_pca.transform(features_test)
+use_pca = bool(env_int('HP_USE_PCA', 0))
 
-pca = PCA(n_components=0.95)
-features_train_pca = pca.fit_transform(features_train_scaled)
-features_test_pca = pca.transform(features_test_scaled)
+if use_pca:
+    scaler_pca = StandardScaler()
+    features_train_scaled = scaler_pca.fit_transform(features_train)
+    features_val_scaled = scaler_pca.transform(features_val)
+    features_test_scaled = scaler_pca.transform(features_test)
 
-data_train_raw = np.concatenate((features_train_pca, target_train), axis=1)
-data_test_raw = np.concatenate((features_test_pca, target_test), axis=1)
+    pca = PCA(n_components=0.95)
+    features_train_used = pca.fit_transform(features_train_scaled)
+    features_val_used = pca.transform(features_val_scaled)
+    features_test_used = pca.transform(features_test_scaled)
+else:
+    features_train_used = features_train
+    features_val_used = features_val
+    features_test_used = features_test
+
+data_train_raw = np.concatenate((features_train_used, target_train), axis=1)
+data_val_raw = np.concatenate((features_val_used, target_val), axis=1)
+data_test_raw = np.concatenate((features_test_used, target_test), axis=1)
 
 scaler = MinMaxScaler()
 data_train = scaler.fit_transform(data_train_raw)
+data_val = scaler.transform(data_val_raw)
 data_test = scaler.transform(data_test_raw)
 
 data_train_mark = data_stamp_train
+data_val_mark = data_stamp_val
 data_test_mark = data_stamp_test
 data_dim = data_train.shape[1]
 
@@ -206,6 +284,9 @@ learning_rate = env_float('HP_LR', 0.0003)
 
 train_loader, x_train, y_train, x_train_mark, y_train_mark = tslib_data_loader(
     window, length_size, batch_size, data_train, data_train_mark, shuffle=True
+)
+val_loader, x_val, y_val, x_val_mark, y_val_mark = tslib_data_loader(
+    window, length_size, batch_size, data_val, data_val_mark, shuffle=False
 )
 test_loader, x_test, y_test, x_test_mark, y_test_mark = tslib_data_loader(
     window, length_size, batch_size, data_test, data_test_mark, shuffle=False
@@ -240,11 +321,15 @@ net = TCN.Model(config).to(device)
 
 criterion = nn.MSELoss().to(device)
 optimizer = optim.Adam(net.parameters(), lr=learning_rate)
+scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=env_int('HP_SCHED_PATIENCE', 8))
 
 # ==========================================
 # 训练与预测
 # ==========================================
-trained_model, train_loss = model_train(net, train_loader, length_size, optimizer, criterion, num_epochs, device)
+trained_model, train_loss, val_loss, final_epoch = model_train_val(
+    net, train_loader, val_loader, length_size, optimizer, criterion, scheduler, num_epochs, device,
+    early_patience=0.15, print_train=True
+)
 
 trained_model.eval()
 preds = []
@@ -252,7 +337,7 @@ trues = []
 with torch.no_grad():
     for x, y, x_mark, y_mark in test_loader:
         x, y, x_mark, y_mark = x.to(device), y.to(device), x_mark.to(device), y_mark.to(device)
-        outputs = trained_model(x, x_mark, y, y_mark)
+        outputs = trained_model(x, x_mark, y, y_mark, None)
         preds.append(outputs.detach().cpu().numpy())
         trues.append(y[:, -length_size:, -1:].detach().cpu().numpy())
 
@@ -291,13 +376,11 @@ print(df_eval)
 # ==========================================
 # 结果保存
 # ==========================================
-output_dir = 'result_best'
 now = datetime.now().strftime("%Y%m%d_%H%M%S")
 run_folder_name = f"{model_type}_{now}_{dataset_name}"
-output_dir = os.path.join('result_best', run_folder_name)
-
-if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
+base_output_dir = os.getenv('MODEL_OUTPUT_DIR', 'result_best')
+output_dir = os.path.join(base_output_dir, run_folder_name)
+os.makedirs(output_dir, exist_ok=True)
 
 print(f"\n==========================================")
 print(f"[INFO] 纯 TCN 消融实验结果将保存在: {output_dir}")

@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import copy
 import matplotlib
 # 如果画图报错或者不弹窗，请取消注释下面这行代码
 matplotlib.use('Agg')
@@ -74,6 +75,7 @@ def model_train_val(net, train_loader, val_loader, length_size, optimizer, crite
     val_loss = []
     early_patience_epochs = int(early_patience * num_epochs)
     best_val_loss = float('inf')
+    best_state_dict = None
     early_stop_counter = 0
 
     for epoch in range(num_epochs):
@@ -130,14 +132,15 @@ def model_train_val(net, train_loader, val_loader, length_size, optimizer, crite
         if avg_val_loss < best_val_loss:
             best_val_loss = avg_val_loss
             early_stop_counter = 0
-            torch.save(net.state_dict(), 'informer_checkpoint.pth')
+            best_state_dict = copy.deepcopy(net.state_dict())
         else:
             early_stop_counter += 1
             if early_stop_counter >= early_patience_epochs:
                 loop.write(f'Early stopping triggered at epoch {epoch + 1}.')
                 break
 
-    net.load_state_dict(torch.load('informer_checkpoint.pth'))
+    if best_state_dict is not None:
+        net.load_state_dict(best_state_dict)
     return net, train_loss, val_loss, epoch + 1
 
 
@@ -177,7 +180,7 @@ def data_cleansing(df):
 # 数据读取与预处理
 # ==========================================
 #data_path = 'data/Yangtze River Delta of China/DT_NEE(20141201-20171130).csv'
-data_path = 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv'
+data_path = os.getenv('DATA_PATH', 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv')
 dataset_name = os.path.splitext(os.path.basename(data_path))[0]
 
 print(f"开始读取数据集: {data_path} ...")
@@ -234,10 +237,10 @@ data_test_mark = data_stamp[val_size:, :]
 
 window = 96
 length_size = 48
-batch_size = 128
+batch_size = 64
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-num_epochs = 80
-learning_rate = 0.0001
+num_epochs = 120
+learning_rate = 0.0002
 
 # 准备 DataLoader
 train_loader, _, _, _, _ = tslib_data_loader(window, length_size, batch_size, data_train, data_train_mark, shuffle=True)
@@ -304,7 +307,7 @@ net = Informer.Model(config).to(device)
 # 优化器与调度器
 criterion = nn.MSELoss().to(device)
 optimizer = optim.Adam(net.parameters(), lr=learning_rate)
-scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5)
+scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=8)
 
 # 模型训练 (统一使用 model_train_val)
 trained_model, train_loss, val_loss, final_epoch = model_train_val(net, train_loader, val_loader, length_size, 

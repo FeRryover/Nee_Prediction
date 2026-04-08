@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import copy
 import matplotlib
 matplotlib.use('Agg')  # 强制使用无GUI后端，解决PyCharm绘图报错
 import matplotlib.pyplot as plt
@@ -156,6 +157,7 @@ def model_train_val(net, train_loader, val_loader, length_size, optimizer, crite
 
     early_patience_epochs = int(early_patience * num_epochs)
     best_val_loss = float('inf')
+    best_state_dict = None
     early_stop_counter = 0
 
     for epoch in range(num_epochs):
@@ -213,14 +215,15 @@ def model_train_val(net, train_loader, val_loader, length_size, optimizer, crite
         if avg_val_loss < best_val_loss:
             best_val_loss = avg_val_loss
             early_stop_counter = 0
-            torch.save(net.state_dict(), 'checkpoint.pth') # 保存最佳模型
+            best_state_dict = copy.deepcopy(net.state_dict())
         else:
             early_stop_counter += 1
             if early_stop_counter >= early_patience_epochs:
                 loop.write(f'Early stopping triggered at epoch {epoch + 1}.')
                 break
 
-    net.load_state_dict(torch.load('checkpoint.pth')) # 加载最佳模型
+    if best_state_dict is not None:
+        net.load_state_dict(best_state_dict)
     return net, train_loss, val_loss, epoch + 1
 
 
@@ -281,8 +284,8 @@ def data_cleansing(df):
 
 
 # 读取数据 - 切换到长江三角洲 DT 农田数据集（30分钟级）
-data_path = 'data/Yangtze River Delta of China/DT_NEE(20141201-20171130).csv'
-#data_path = 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv'
+data_path = os.getenv('DATA_PATH', 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv')
+#data_path = 'data/Yangtze River Delta of China/DT_NEE(20141201-20171130).csv'
 dataset_name = os.path.splitext(os.path.basename(data_path))[0]
 
 print(f"开始读取数据集: {data_path} ...")
@@ -323,19 +326,7 @@ df_stamp = df[['date']].copy()
 df_stamp['date'] = pd.to_datetime(df_stamp['date'])
 data_stamp = time_features(df_stamp, timeenc=1, freq='h')
 
-# --- V3: 增加正余弦周期编码 (Sin/Cos Encoding) ---
-# data_stamp 原有: [HourOfDay, DayOfWeek, DayOfMonth, DayOfYear]
-# 我们为核心周期 (Hour, Day) 增加周期性表达
-hour_rad = (df_stamp['date'].dt.hour / 23.0) * 2 * np.pi
-day_rad = (df_stamp['date'].dt.dayofyear / 365.0) * 2 * np.pi
-
-sin_cos_features = np.stack([
-    np.sin(hour_rad), np.cos(hour_rad),
-    np.sin(day_rad), np.cos(day_rad)
-], axis=1)
-
-data_stamp = np.concatenate([data_stamp, sin_cos_features], axis=1)
-print(f"时间特征扩充完成 (Sin/Cos): {data_stamp.shape}")
+# 统一口径：不额外扩展 Sin/Cos 时间特征
 print("时间特征编码完成...")
 
 # --- V3: 公平归一化 (StandardScaler, Fit 仅在训练集) ---
@@ -345,7 +336,7 @@ train_ratio, val_ratio = 0.6, 0.8
 train_size = int(data_length * train_ratio)
 val_size = int(data_length * val_ratio)
 
-scaler = StandardScaler()
+scaler = MinMaxScaler()
 data_train_raw = data_full[:train_size, :]
 scaler.fit(data_train_raw)
 data_scaled = scaler.transform(data_full)
@@ -353,7 +344,7 @@ data_dim = data_scaled.shape[1]
 
 window = 96  # 输入序列: 过去 2 天的半小时数据 (48 * 2)
 length_size = 48  # 预测未来的序列长度: 未来 1 天 (48 * 1)
-batch_size = 128
+batch_size = 64
 
 # 切分数据集
 data_train = data_scaled[:train_size, :]
@@ -371,10 +362,10 @@ val_loader, x_val, y_val, x_val_mark, y_val_mark = tslib_data_loader(window, len
 test_loader, x_test, y_test, x_test_mark, y_test_mark = tslib_data_loader(window, length_size, batch_size, data_test,
                                                             data_test_mark, shuffle=False)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-num_epochs = 80  # 训练迭代次数
-learning_rate = 0.0001  # V6: 稳定学习率
-scheduler_patience = int(0.25 * num_epochs)  # 转换为整数  学习率调整的patience
-early_patience = 0.1  # 训练迭代的早停比例 即patience=0.1*num_epochs
+num_epochs = 120  # 统一训练轮数
+learning_rate = 0.0002  # 统一学习率
+scheduler_patience = 8  # 统一调度耐心轮数
+early_patience = 0.15  # 统一早停比例
 
 
 class Config:
@@ -404,7 +395,7 @@ class Config:
         self.factor = 5     # 注意力因子
         self.activation = 'gelu'  # 激活函数
         self.channel_independence = 0  # 频道独立性，0:频道依赖，1:频道独立
-        self.time_dims = 8  # V3: 8 维时间特征 (4 线性 + 4 Sin/Cos)
+        self.time_dims = 4  # 统一时间特征维度
 
         self.top_k = 6  # TimesBlock中的参数
         self.num_kernels = 6  # Inception中的参数
@@ -477,7 +468,7 @@ print("Shape of pred after horizon adjustment:", pred.shape)
 print("Shape of true after horizon adjustment:", true.shape)
 
 # --- Scaler 只在训练集上 fit (V6 修复 NameError) ---
-target_scaler = StandardScaler()
+target_scaler = MinMaxScaler()
 target_scaler.fit(data_target[:train_size])
 
 # 反归一化：将整体 [N, 48] 拉平为 [N*48, 1] 进行变换，再恢复形状

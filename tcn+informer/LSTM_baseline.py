@@ -76,7 +76,7 @@ def create_lstm_dataset(data, window, length_size):
 # 3. 读取数据与特征工程 (严格对齐你的预处理)
 # ==========================================
 #data_path = 'data/Yangtze River Delta of China/DT_NEE(20141201-20171130).csv'
-data_path = 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv'
+data_path = os.getenv('DATA_PATH', 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv')
 dataset_name = os.path.splitext(os.path.basename(data_path))[0]
 
 print(f"开始读取数据集: {data_path} ...")
@@ -112,21 +112,10 @@ target_train = data_target[:train_size, :]
 target_val = data_target[train_size:val_size, :]
 target_test = data_target[val_size:, :]
 
-# 标准化与 PCA 降维
-scaler_pca = StandardScaler()
-features_train_scaled = scaler_pca.fit_transform(features_train)
-features_val_scaled = scaler_pca.transform(features_val)
-features_test_scaled = scaler_pca.transform(features_test)
-
-pca = PCA(n_components=0.95)
-features_train_pca = pca.fit_transform(features_train_scaled)
-features_val_pca = pca.transform(features_val_scaled)
-features_test_pca = pca.transform(features_test_scaled)
-
-# 拼接特征与目标
-data_train_raw = np.concatenate((features_train_pca, target_train), axis=1)
-data_val_raw = np.concatenate((features_val_pca, target_val), axis=1)
-data_test_raw = np.concatenate((features_test_pca, target_test), axis=1)
+# 统一口径：不使用 PCA
+data_train_raw = np.concatenate((features_train, target_train), axis=1)
+data_val_raw = np.concatenate((features_val, target_val), axis=1)
+data_test_raw = np.concatenate((features_test, target_test), axis=1)
 
 # 全局输入归一化
 scaler = MinMaxScaler()
@@ -139,7 +128,7 @@ data_test = scaler.transform(data_test_raw)
 # ==========================================
 window = 96  # 输入过去 96 步
 length_size = 48  # 预测未来 48 步
-batch_size = 128
+batch_size = 64
 input_size = data_train.shape[1]  # 特征维度
 
 print("正在构建 LSTM 数据集张量...")
@@ -183,8 +172,8 @@ class LSTMForecastModel(nn.Module):
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 hidden_size = 64
 num_layers = 2
-num_epochs = 100
-learning_rate = 0.001
+num_epochs = 120
+learning_rate = 0.0002
 
 model = LSTMForecastModel(input_size, hidden_size, num_layers, length_size).to(device)
 criterion = nn.MSELoss()
@@ -192,7 +181,7 @@ optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
 # 早停机制 (Early Stopping) 基于验证集
 best_val_loss = float('inf')
-patience = 15
+patience = 18
 patience_counter = 0
 
 print(f"\n开始在 {device} 上训练 LSTM 模型...")

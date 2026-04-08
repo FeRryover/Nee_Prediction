@@ -167,7 +167,7 @@ def data_cleansing(df):
 # 数据读取与预处理
 # ==========================================
 #data_path = 'data/Yangtze River Delta of China/DT_NEE(20141201-20171130).csv'
-data_path = 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv'
+data_path = os.getenv('DATA_PATH', 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv')
 
 dataset_name = os.path.splitext(os.path.basename(data_path))[0]
 
@@ -224,7 +224,7 @@ data_test_mark = data_stamp[val_size:, :]
 
 window = 96
 length_size = 48
-batch_size = 128
+batch_size = 64
 
 print("准备封装 PyTorch DataLoader...")
 train_loader, x_train, y_train, x_train_mark, y_train_mark = tslib_data_loader(
@@ -241,8 +241,8 @@ test_loader, x_test, y_test, x_test_mark, y_test_mark = tslib_data_loader(
 print("测试集 DataLoader 封装完成...")
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-num_epochs = 80
-learning_rate = 0.0001
+num_epochs = 120
+learning_rate = 0.0002
 
 # 配置参数
 data_dim = data_scaled.shape[1]
@@ -282,7 +282,7 @@ net = iTransformer.Model(config).to(device)
 
 criterion = nn.MSELoss().to(device)
 optimizer = optim.Adam(net.parameters(), lr=learning_rate)
-scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5)
+scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=8)
 
 # 模型训练 (统一使用 model_train_val)
 trained_model, train_loss, val_loss, final_epoch = model_train_val(net, train_loader, val_loader, length_size, 

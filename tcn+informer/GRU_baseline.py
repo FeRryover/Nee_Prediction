@@ -63,7 +63,7 @@ def create_gru_dataset(data, window, length_size):
 
 
 #data_path = 'data/Yangtze River Delta of China/DT_NEE(20141201-20171130).csv'
-data_path = 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv'
+data_path = os.getenv('DATA_PATH', 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv')
 
 dataset_name = os.path.splitext(os.path.basename(data_path))[0]
 
@@ -75,12 +75,9 @@ if 'Target' in df.columns:
     df.rename(columns={'Target': 'target'}, inplace=True)
 
 df['date'] = pd.to_datetime(df['date'])
-df['hour'] = df['date'].dt.hour
-df['dayofweek'] = df['date'].dt.dayofweek
-df['month'] = df['date'].dt.month
 
 for col in ['K↓', 'Tair', 'VPD']:
-    for lag in range(1, 5):
+    for lag in range(1, 4):
         df[f'{col}_lag{lag}'] = df[col].shift(lag)
 
 for col in ['K↓', 'Tair']:
@@ -104,7 +101,7 @@ target_train = data_target[:train_size, :]
 target_val = data_target[train_size:val_size, :]
 target_test = data_target[val_size:, :]
 
-use_pca = True
+use_pca = False
 
 if use_pca:
     scaler_pca = StandardScaler()
@@ -132,7 +129,7 @@ data_test = scaler.transform(data_test_raw)
 
 window = 96
 length_size = 48
-batch_size = 96
+batch_size = 64
 input_size = data_train.shape[1]
 
 print("正在构建 GRU 数据集张量...")
@@ -165,7 +162,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 hidden_size = 64
 num_layers = 2
 num_epochs = 120
-learning_rate = 0.0008
+learning_rate = 0.0002
 
 print(f"\n模型配置（保持原版架构）: hidden_size={hidden_size}, num_layers={num_layers}, window={window}")
 print(f"开始在 {device} 上训练优化版 GRU 模型...")
@@ -173,7 +170,7 @@ print(f"开始在 {device} 上训练优化版 GRU 模型...")
 model = GRUForecastModel(input_size, hidden_size, num_layers, length_size).to(device)
 criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.6, patience=10)
+scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=8)
 
 best_val_loss = float('inf')
 patience = 18

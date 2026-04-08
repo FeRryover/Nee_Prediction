@@ -160,8 +160,8 @@ def data_cleansing(df):
 # ==========================================
 # 数据读取与预处理
 # ==========================================
-data_path = 'data/Yangtze River Delta of China/DT_NEE(20141201-20171130).csv'
-#data_path = 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv'
+data_path = os.getenv('DATA_PATH', 'data/Yangtze River Delta of China/SX_NEE(20150715-20190424).csv')
+#data_path = 'data/Yangtze River Delta of China/DT_NEE(20141201-20171130).csv'
 
 dataset_name = os.path.splitext(os.path.basename(data_path))[0]
 
@@ -218,10 +218,10 @@ data_test_mark = data_stamp[val_size:, :]
 
 window = 96
 length_size = 48
-batch_size = 128
+batch_size = 64
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-num_epochs = 80
-learning_rate = 0.0001
+num_epochs = 120
+learning_rate = 0.0002
 
 # 准备 DataLoader
 train_loader, _, _, _, _ = tslib_data_loader(window, length_size, batch_size, data_train, data_train_mark, shuffle=True)
@@ -258,7 +258,7 @@ net = ExoTST.Model(config).to(device)
 
 criterion = nn.MSELoss().to(device)
 optimizer = optim.Adam(net.parameters(), lr=learning_rate)
-scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5)
+scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=8)
 
 # 模型训练 (采用统一的 model_train_val)
 trained_model, train_loss, val_loss, final_epoch = model_train_val(net, train_loader, val_loader, length_size, 
@@ -272,7 +272,9 @@ trues = []
 with torch.no_grad():
     for x, y, x_mark, y_mark in test_loader:
         x, y, x_mark, y_mark = x.to(device), y.to(device), x_mark.to(device), y_mark.to(device)
-        outputs = trained_model(x, x_mark, y, y_mark)
+        y_masked = y.clone()
+        y_masked[:, -length_size:, -1] = 0
+        outputs = trained_model(x, x_mark, y_masked, y_mark)
         preds.append(outputs.detach().cpu().numpy())
         trues.append(y[:, -length_size:, -1:].detach().cpu().numpy())
 

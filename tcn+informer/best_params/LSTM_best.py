@@ -126,21 +126,26 @@ target_train = data_target[:train_size, :]
 target_val = data_target[train_size:val_size, :]
 target_test = data_target[val_size:, :]
 
-# 标准化与 PCA 降维
-scaler_pca = StandardScaler()
-features_train_scaled = scaler_pca.fit_transform(features_train)
-features_val_scaled = scaler_pca.transform(features_val)
-features_test_scaled = scaler_pca.transform(features_test)
+use_pca = bool(env_int('HP_USE_PCA', 0))
 
-pca = PCA(n_components=0.95)
-features_train_pca = pca.fit_transform(features_train_scaled)
-features_val_pca = pca.transform(features_val_scaled)
-features_test_pca = pca.transform(features_test_scaled)
+if use_pca:
+    scaler_pca = StandardScaler()
+    features_train_scaled = scaler_pca.fit_transform(features_train)
+    features_val_scaled = scaler_pca.transform(features_val)
+    features_test_scaled = scaler_pca.transform(features_test)
 
-# 拼接特征与目标
-data_train_raw = np.concatenate((features_train_pca, target_train), axis=1)
-data_val_raw = np.concatenate((features_val_pca, target_val), axis=1)
-data_test_raw = np.concatenate((features_test_pca, target_test), axis=1)
+    pca = PCA(n_components=0.95)
+    features_train_used = pca.fit_transform(features_train_scaled)
+    features_val_used = pca.transform(features_val_scaled)
+    features_test_used = pca.transform(features_test_scaled)
+else:
+    features_train_used = features_train
+    features_val_used = features_val
+    features_test_used = features_test
+
+data_train_raw = np.concatenate((features_train_used, target_train), axis=1)
+data_val_raw = np.concatenate((features_val_used, target_val), axis=1)
+data_test_raw = np.concatenate((features_test_used, target_test), axis=1)
 
 # 全局输入归一化
 scaler = MinMaxScaler()
@@ -290,9 +295,9 @@ print(df_eval)
 # ==========================================
 now = datetime.now().strftime("%Y%m%d_%H%M%S")
 run_folder_name = f"LSTM_Best_{now}_{dataset_name}"
-output_dir = os.path.join('result_best', run_folder_name)
-if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
+base_output_dir = os.getenv('MODEL_OUTPUT_DIR', 'result_best')
+output_dir = os.path.join(base_output_dir, run_folder_name)
+os.makedirs(output_dir, exist_ok=True)
 
 print(f"\n==========================================")
 print(f"[INFO] 本次运行的所有结果将保存在: {output_dir}")
