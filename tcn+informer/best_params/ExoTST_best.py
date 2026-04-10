@@ -90,9 +90,11 @@ def model_train_val(net, train_loader, val_loader, length_size, optimizer, crite
             datapoints, labels, datapoints_mark, labels_mark = datapoints.to(device), labels.to(
                 device), datapoints_mark.to(device), labels_mark.to(device)
             optimizer.zero_grad()
-            
-            # ExoTST 保持原样 (因为它内部会切片)
-            preds = net(datapoints, datapoints_mark, labels, labels_mark, None)
+
+            # 训练阶段掩码未来目标，避免信息泄漏
+            labels_masked = labels.clone()
+            labels_masked[:, -length_size:, -1] = 0
+            preds = net(datapoints, datapoints_mark, labels_masked, labels_mark, None)
             preds = preds[:, -length_size:, -1:]
             labels = labels[:, -length_size:, -1:]
             
@@ -112,8 +114,11 @@ def model_train_val(net, train_loader, val_loader, length_size, optimizer, crite
             for val_x, val_y, val_x_mark, val_y_mark in val_loader:
                 val_x, val_y, val_x_mark, val_y_mark = val_x.to(device), val_y.to(device), val_x_mark.to(
                     device), val_y_mark.to(device)
-                
-                pred_val_y = net(val_x, val_x_mark, val_y, val_y_mark, None)
+
+                # 验证阶段同样掩码未来目标
+                val_y_masked = val_y.clone()
+                val_y_masked[:, -length_size:, -1] = 0
+                pred_val_y = net(val_x, val_x_mark, val_y_masked, val_y_mark, None)
                 pred_val_y = pred_val_y[:, -length_size:, -1:]
                 val_y_true = val_y[:, -length_size:, -1:]
                 
@@ -210,12 +215,27 @@ feature_cols = [c for c in df.columns if c not in ['date', 'target']]
 data_target = df[['target']].values
 features = df[feature_cols].values
 
-# 数据合并与归一化
-data_full = np.concatenate((features, data_target), axis=1) # 18特征+1目标
-data_length = len(data_full)
+data_length = len(features)
 train_ratio, val_ratio = 0.6, 0.8
 train_size = int(train_ratio * data_length)
 val_size = int(val_ratio * data_length)
+
+use_pca = bool(env_int('HP_USE_PCA', 0))
+if use_pca:
+    print("[INFO] PCA mode enabled (n_components=0.95)")
+    scaler_features = StandardScaler()
+    train_features = features[:train_size, :]
+    scaler_features.fit(train_features)
+    features_scaled = scaler_features.transform(features)
+
+    pca = PCA(n_components=0.95)
+    pca.fit(features_scaled[:train_size, :])
+    features_used = pca.transform(features_scaled)
+else:
+    features_used = features
+
+# 数据合并与归一化
+data_full = np.concatenate((features_used, data_target), axis=1)
 
 scaler = MinMaxScaler()
 data_train_raw = data_full[:train_size, :]

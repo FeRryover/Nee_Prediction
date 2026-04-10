@@ -222,6 +222,25 @@ feature_cols = [c for c in df.columns if c not in ['date', 'target']]
 data_target = df[['target']].values
 features = df[feature_cols].values
 
+data_length = len(features)
+train_ratio, val_ratio = 0.6, 0.8
+train_size = int(train_ratio * data_length)
+val_size = int(val_ratio * data_length)
+
+use_pca = bool(env_int('HP_USE_PCA', 0))
+if use_pca:
+    print("[INFO] PCA mode enabled (n_components=0.95)")
+    scaler_features = StandardScaler()
+    train_features = features[:train_size, :]
+    scaler_features.fit(train_features)
+    features_scaled = scaler_features.transform(features)
+
+    pca = PCA(n_components=0.95)
+    pca.fit(features_scaled[:train_size, :])
+    features_used = pca.transform(features_scaled)
+else:
+    features_used = features
+
 print("特征和目标变量提取完成，准备时间特征编码...")
 df_stamp = df[['date']].copy()
 df_stamp['date'] = pd.to_datetime(df_stamp['date'])
@@ -230,11 +249,7 @@ print("时间特征编码完成...")
 
 # 严格切分训练集与测试集防止泄露
 # 数据合并与归一化
-data_full = np.concatenate((features, data_target), axis=1) # 18特征+1目标
-data_length = len(data_full)
-train_ratio, val_ratio = 0.6, 0.8
-train_size = int(train_ratio * data_length)
-val_size = int(val_ratio * data_length)
+data_full = np.concatenate((features_used, data_target), axis=1)
 
 scaler = MinMaxScaler()
 data_train_raw = data_full[:train_size, :]

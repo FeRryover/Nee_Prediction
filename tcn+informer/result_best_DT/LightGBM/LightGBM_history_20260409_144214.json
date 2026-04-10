@@ -1,0 +1,186 @@
+[
+  {
+    "trial": 1,
+    "hp": {
+      "HP_N_ESTIMATORS": 700,
+      "HP_LR": 0.02,
+      "HP_MAX_DEPTH": -1,
+      "HP_NUM_LEAVES": 63,
+      "HP_MIN_CHILD_SAMPLES": 20,
+      "HP_REG_LAMBDA": 0.5,
+      "HP_SUBSAMPLE": 0.8,
+      "HP_COLSAMPLE": 0.8,
+      "HP_EARLY_STOP_ROUNDS": 80,
+      "HP_USE_PCA": 0
+    },
+    "metrics": {
+      "R2": 0.4306677579879761,
+      "MSE": 75.5216293334961,
+      "RMSE": 8.69031813764583,
+      "MAE": 5.022700309753418,
+      "MAPE": 610.4885101318359,
+      "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/LightGBM/LightGBM_Best_20260409_142436_DT_NEE(20141201-20171130)/LightGBM_Best_20260409_142436_DT_NEE(20141201-20171130)_metrics.csv"
+    }
+  },
+  {
+    "trial": 2,
+    "hp": {
+      "HP_N_ESTIMATORS": 400,
+      "HP_LR": 0.05,
+      "HP_MAX_DEPTH": 8,
+      "HP_NUM_LEAVES": 31,
+      "HP_MIN_CHILD_SAMPLES": 30,
+      "HP_REG_LAMBDA": 0.5,
+      "HP_SUBSAMPLE": 0.8,
+      "HP_COLSAMPLE": 1.0,
+      "HP_EARLY_STOP_ROUNDS": 50,
+      "HP_USE_PCA": 0
+    },
+    "metrics": {
+      "R2": 0.4302421808242798,
+      "MSE": 75.57807922363281,
+      "RMSE": 8.693565391922512,
+      "MAE": 4.981720447540283,
+      "MAPE": 588.8533115386963,
+      "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/LightGBM/LightGBM_Best_20260409_142732_DT_NEE(20141201-20171130)/LightGBM_Best_20260409_142732_DT_NEE(20141201-20171130)_metrics.csv"
+    }
+  },
+  {
+    "trial": 3,
+    "hp": {
+      "HP_N_ESTIMATORS": 700,
+      "HP_LR": 0.05,
+      "HP_MAX_DEPTH": 12,
+      "HP_NUM_LEAVES": 63,
+      "HP_MIN_CHILD_SAMPLES": 10,
+      "HP_REG_LAMBDA": 3.0,
+      "HP_SUBSAMPLE": 1.0,
+      "HP_COLSAMPLE": 1.0,
+      "HP_EARLY_STOP_ROUNDS": 30,
+      "HP_USE_PCA": 1
+    },
+    "metrics": {
+      "R2": 0.4202771186828613,
+      "MSE": 76.89994812011719,
+      "RMSE": 8.76926154930489,
+      "MAE": 4.972446441650391,
+      "MAPE": 532.6507091522217,
+      "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/LightGBM/LightGBM_Best_20260409_142850_DT_NEE(20141201-20171130)/LightGBM_Best_20260409_142850_DT_NEE(20141201-20171130)_metrics.csv"
+    }
+  },
+  {
+    "trial": 4,
+    "hp": {
+      "HP_N_ESTIMATORS": 700,
+      "HP_LR": 0.05,
+      "HP_MAX_DEPTH": 12,
+      "HP_NUM_LEAVES": 63,
+      "HP_MIN_CHILD_SAMPLES": 20,
+      "HP_REG_LAMBDA": 3.0,
+      "HP_SUBSAMPLE": 0.9,
+      "HP_COLSAMPLE": 0.8,
+      "HP_EARLY_STOP_ROUNDS": 30,
+      "HP_USE_PCA": 0
+    },
+    "metrics": {
+      "R2": 0.4305543899536133,
+      "MSE": 75.53666687011719,
+      "RMSE": 8.691183283656903,
+      "MAE": 5.009893417358398,
+      "MAPE": 580.8492660522461,
+      "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/LightGBM/LightGBM_Best_20260409_143148_DT_NEE(20141201-20171130)/LightGBM_Best_20260409_143148_DT_NEE(20141201-20171130)_metrics.csv"
+    }
+  },
+  {
+    "trial": 5,
+    "hp": {
+      "HP_N_ESTIMATORS": 400,
+      "HP_LR": 0.03,
+      "HP_MAX_DEPTH": -1,
+      "HP_NUM_LEAVES": 127,
+      "HP_MIN_CHILD_SAMPLES": 30,
+      "HP_REG_LAMBDA": 0.5,
+      "HP_SUBSAMPLE": 1.0,
+      "HP_COLSAMPLE": 0.8,
+      "HP_EARLY_STOP_ROUNDS": 30,
+      "HP_USE_PCA": 0
+    },
+    "metrics": {
+      "R2": 0.4200875163078308,
+      "MSE": 76.92509460449219,
+      "RMSE": 8.770695217854295,
+      "MAE": 5.170409202575684,
+      "MAPE": 742.9385662078857,
+      "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/LightGBM/LightGBM_Best_20260409_143638_DT_NEE(20141201-20171130)/LightGBM_Best_20260409_143638_DT_NEE(20141201-20171130)_metrics.csv"
+    }
+  },
+  {
+    "trial": 6,
+    "hp": {
+      "HP_N_ESTIMATORS": 1000,
+      "HP_LR": 0.05,
+      "HP_MAX_DEPTH": -1,
+      "HP_NUM_LEAVES": 31,
+      "HP_MIN_CHILD_SAMPLES": 10,
+      "HP_REG_LAMBDA": 0.5,
+      "HP_SUBSAMPLE": 0.9,
+      "HP_COLSAMPLE": 0.8,
+      "HP_EARLY_STOP_ROUNDS": 80,
+      "HP_USE_PCA": 0
+    },
+    "metrics": {
+      "R2": 0.4324155449867248,
+      "MSE": 75.28978729248047,
+      "RMSE": 8.676968784805007,
+      "MAE": 4.9398112297058105,
+      "MAPE": 569.1501140594482,
+      "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/LightGBM/LightGBM_Best_20260409_143948_DT_NEE(20141201-20171130)/LightGBM_Best_20260409_143948_DT_NEE(20141201-20171130)_metrics.csv"
+    }
+  },
+  {
+    "trial": 7,
+    "hp": {
+      "HP_N_ESTIMATORS": 700,
+      "HP_LR": 0.05,
+      "HP_MAX_DEPTH": 8,
+      "HP_NUM_LEAVES": 31,
+      "HP_MIN_CHILD_SAMPLES": 30,
+      "HP_REG_LAMBDA": 0.5,
+      "HP_SUBSAMPLE": 1.0,
+      "HP_COLSAMPLE": 1.0,
+      "HP_EARLY_STOP_ROUNDS": 80,
+      "HP_USE_PCA": 1
+    },
+    "metrics": {
+      "R2": 0.4250124096870422,
+      "MSE": 76.27180480957031,
+      "RMSE": 8.73337304880367,
+      "MAE": 4.978573799133301,
+      "MAPE": 591.9398307800293,
+      "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/LightGBM/LightGBM_Best_20260409_144100_DT_NEE(20141201-20171130)/LightGBM_Best_20260409_144100_DT_NEE(20141201-20171130)_metrics.csv"
+    }
+  },
+  {
+    "trial": 8,
+    "hp": {
+      "HP_N_ESTIMATORS": 400,
+      "HP_LR": 0.03,
+      "HP_MAX_DEPTH": 8,
+      "HP_NUM_LEAVES": 31,
+      "HP_MIN_CHILD_SAMPLES": 10,
+      "HP_REG_LAMBDA": 0.5,
+      "HP_SUBSAMPLE": 1.0,
+      "HP_COLSAMPLE": 0.9,
+      "HP_EARLY_STOP_ROUNDS": 50,
+      "HP_USE_PCA": 1
+    },
+    "metrics": {
+      "R2": 0.4285141229629516,
+      "MSE": 75.80731201171875,
+      "RMSE": 8.706739459276289,
+      "MAE": 4.935184478759766,
+      "MAPE": 561.6461277008057,
+      "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/LightGBM/LightGBM_Best_20260409_144214_DT_NEE(20141201-20171130)/LightGBM_Best_20260409_144214_DT_NEE(20141201-20171130)_metrics.csv"
+    }
+  }
+]

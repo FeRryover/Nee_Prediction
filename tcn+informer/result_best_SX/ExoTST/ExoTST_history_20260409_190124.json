@@ -1,0 +1,186 @@
+[
+  {
+    "trial": 1,
+    "hp": {
+      "HP_BATCH_SIZE": 96,
+      "HP_EPOCHS": 80,
+      "HP_LR": 0.0002,
+      "HP_D_MODEL": 256,
+      "HP_N_HEADS": 4,
+      "HP_E_LAYERS": 3,
+      "HP_D_FF": 256,
+      "HP_DROPOUT": 0.1,
+      "HP_SCHED_PATIENCE": 8,
+      "HP_USE_PCA": 1
+    },
+    "metrics": {
+      "R2": 0.3119445443153381,
+      "MSE": 90.3331527709961,
+      "RMSE": 9.504375454020956,
+      "MAE": 5.762081146240234,
+      "MAPE": 458.4188461303711,
+      "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/ExoTST/ExoTST_Best_20260409_181657_SX_NEE(20150715-20190424)/ExoTST_Best_20260409_181657_SX_NEE(20150715-20190424)_metrics.csv"
+    }
+  },
+  {
+    "trial": 2,
+    "hp": {
+      "HP_BATCH_SIZE": 32,
+      "HP_EPOCHS": 120,
+      "HP_LR": 0.0001,
+      "HP_D_MODEL": 256,
+      "HP_N_HEADS": 4,
+      "HP_E_LAYERS": 4,
+      "HP_D_FF": 256,
+      "HP_DROPOUT": 0.15,
+      "HP_SCHED_PATIENCE": 12,
+      "HP_USE_PCA": 1
+    },
+    "metrics": {
+      "R2": 0.2981715202331543,
+      "MSE": 92.14138793945312,
+      "RMSE": 9.599030572899178,
+      "MAE": 5.82844352722168,
+      "MAPE": 496.759033203125,
+      "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/ExoTST/ExoTST_Best_20260409_182857_SX_NEE(20150715-20190424)/ExoTST_Best_20260409_182857_SX_NEE(20150715-20190424)_metrics.csv"
+    }
+  },
+  {
+    "trial": 3,
+    "hp": {
+      "HP_BATCH_SIZE": 96,
+      "HP_EPOCHS": 160,
+      "HP_LR": 0.0001,
+      "HP_D_MODEL": 128,
+      "HP_N_HEADS": 4,
+      "HP_E_LAYERS": 2,
+      "HP_D_FF": 384,
+      "HP_DROPOUT": 0.1,
+      "HP_SCHED_PATIENCE": 6,
+      "HP_USE_PCA": 1
+    },
+    "metrics": {
+      "R2": 0.3299639821052551,
+      "MSE": 87.9674301147461,
+      "RMSE": 9.37909537827322,
+      "MAE": 5.704967498779297,
+      "MAPE": 492.22354888916016,
+      "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/ExoTST/ExoTST_Best_20260409_183356_SX_NEE(20150715-20190424)/ExoTST_Best_20260409_183356_SX_NEE(20150715-20190424)_metrics.csv"
+    }
+  },
+  {
+    "trial": 4,
+    "hp": {
+      "HP_BATCH_SIZE": 64,
+      "HP_EPOCHS": 160,
+      "HP_LR": 0.0003,
+      "HP_D_MODEL": 128,
+      "HP_N_HEADS": 8,
+      "HP_E_LAYERS": 2,
+      "HP_D_FF": 512,
+      "HP_DROPOUT": 0.1,
+      "HP_SCHED_PATIENCE": 8,
+      "HP_USE_PCA": 0
+    },
+    "metrics": {
+      "R2": 0.2990114092826843,
+      "MSE": 92.03111267089844,
+      "RMSE": 9.593284769613504,
+      "MAE": 5.870301723480225,
+      "MAPE": 370.32222747802734,
+      "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/ExoTST/ExoTST_Best_20260409_183946_SX_NEE(20150715-20190424)/ExoTST_Best_20260409_183946_SX_NEE(20150715-20190424)_metrics.csv"
+    }
+  },
+  {
+    "trial": 5,
+    "hp": {
+      "HP_BATCH_SIZE": 64,
+      "HP_EPOCHS": 80,
+      "HP_LR": 0.0001,
+      "HP_D_MODEL": 192,
+      "HP_N_HEADS": 8,
+      "HP_E_LAYERS": 3,
+      "HP_D_FF": 256,
+      "HP_DROPOUT": 0.1,
+      "HP_SCHED_PATIENCE": 6,
+      "HP_USE_PCA": 0
+    },
+    "metrics": {
+      "R2": 0.3141121864318847,
+      "MSE": 90.04856872558594,
+      "RMSE": 9.489392431846516,
+      "MAE": 5.85536527633667,
+      "MAPE": 476.94458961486816,
+      "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/ExoTST/ExoTST_Best_20260409_184416_SX_NEE(20150715-20190424)/ExoTST_Best_20260409_184416_SX_NEE(20150715-20190424)_metrics.csv"
+    }
+  },
+  {
+    "trial": 6,
+    "hp": {
+      "HP_BATCH_SIZE": 64,
+      "HP_EPOCHS": 120,
+      "HP_LR": 0.0002,
+      "HP_D_MODEL": 128,
+      "HP_N_HEADS": 8,
+      "HP_E_LAYERS": 3,
+      "HP_D_FF": 512,
+      "HP_DROPOUT": 0.2,
+      "HP_SCHED_PATIENCE": 8,
+      "HP_USE_PCA": 1
+    },
+    "metrics": {
+      "R2": 0.3254139423370361,
+      "MSE": 88.5647964477539,
+      "RMSE": 9.410887123313822,
+      "MAE": 5.725918292999268,
+      "MAPE": 431.9605350494385,
+      "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/ExoTST/ExoTST_Best_20260409_184958_SX_NEE(20150715-20190424)/ExoTST_Best_20260409_184958_SX_NEE(20150715-20190424)_metrics.csv"
+    }
+  },
+  {
+    "trial": 7,
+    "hp": {
+      "HP_BATCH_SIZE": 32,
+      "HP_EPOCHS": 80,
+      "HP_LR": 0.0002,
+      "HP_D_MODEL": 128,
+      "HP_N_HEADS": 8,
+      "HP_E_LAYERS": 2,
+      "HP_D_FF": 256,
+      "HP_DROPOUT": 0.2,
+      "HP_SCHED_PATIENCE": 8,
+      "HP_USE_PCA": 1
+    },
+    "metrics": {
+      "R2": 0.3372362852096557,
+      "MSE": 87.01266479492188,
+      "RMSE": 9.328057932652534,
+      "MAE": 5.669871330261231,
+      "MAPE": 511.8422031402588,
+      "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/ExoTST/ExoTST_Best_20260409_185708_SX_NEE(20150715-20190424)/ExoTST_Best_20260409_185708_SX_NEE(20150715-20190424)_metrics.csv"
+    }
+  },
+  {
+    "trial": 8,
+    "hp": {
+      "HP_BATCH_SIZE": 96,
+      "HP_EPOCHS": 120,
+      "HP_LR": 0.0002,
+      "HP_D_MODEL": 256,
+      "HP_N_HEADS": 4,
+      "HP_E_LAYERS": 3,
+      "HP_D_FF": 512,
+      "HP_DROPOUT": 0.1,
+      "HP_SCHED_PATIENCE": 8,
+      "HP_USE_PCA": 0
+    },
+    "metrics": {
+      "R2": 0.2540953159332275,
+      "MSE": 97.92803955078124,
+      "RMSE": 9.895859717618336,
+      "MAE": 6.216212272644043,
+      "MAPE": 524.677562713623,
+      "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/ExoTST/ExoTST_Best_20260409_190123_SX_NEE(20150715-20190424)/ExoTST_Best_20260409_190123_SX_NEE(20150715-20190424)_metrics.csv"
+    }
+  }
+]

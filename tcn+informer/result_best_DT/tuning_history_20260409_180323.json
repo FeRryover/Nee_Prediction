@@ -1,0 +1,1426 @@
+{
+  "PatchTST": [
+    {
+      "trial": 1,
+      "hp": {
+        "HP_BATCH_SIZE": 96,
+        "HP_EPOCHS": 80,
+        "HP_LR": 0.0001,
+        "HP_D_MODEL": 192,
+        "HP_E_LAYERS": 3,
+        "HP_DROPOUT": 0.1,
+        "HP_SCHED_PATIENCE": 6,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.3943745493888855,
+        "MSE": 80.33589935302734,
+        "RMSE": 8.963029585638292,
+        "MAE": 5.067243576049805,
+        "MAPE": 495.01233100891113,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/PatchTST/PatchTST_Best_20260409_130502_DT_NEE(20141201-20171130)/PatchTST_Best_20260409_130502_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 2,
+      "hp": {
+        "HP_BATCH_SIZE": 96,
+        "HP_EPOCHS": 80,
+        "HP_LR": 0.0003,
+        "HP_D_MODEL": 192,
+        "HP_E_LAYERS": 4,
+        "HP_DROPOUT": 0.1,
+        "HP_SCHED_PATIENCE": 12,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.4141178727149963,
+        "MSE": 77.71696472167969,
+        "RMSE": 8.815722586474672,
+        "MAE": 5.080628395080566,
+        "MAPE": 460.9182834625244,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/PatchTST/PatchTST_Best_20260409_130820_DT_NEE(20141201-20171130)/PatchTST_Best_20260409_130820_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 3,
+      "hp": {
+        "HP_BATCH_SIZE": 32,
+        "HP_EPOCHS": 80,
+        "HP_LR": 0.0001,
+        "HP_D_MODEL": 64,
+        "HP_E_LAYERS": 2,
+        "HP_DROPOUT": 0.2,
+        "HP_SCHED_PATIENCE": 12,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.4227517247200012,
+        "MSE": 76.57169342041016,
+        "RMSE": 8.750525322539794,
+        "MAE": 4.933363914489746,
+        "MAPE": 584.7793102264404,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/PatchTST/PatchTST_Best_20260409_131604_DT_NEE(20141201-20171130)/PatchTST_Best_20260409_131604_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 4,
+      "hp": {
+        "HP_BATCH_SIZE": 96,
+        "HP_EPOCHS": 80,
+        "HP_LR": 0.0003,
+        "HP_D_MODEL": 192,
+        "HP_E_LAYERS": 4,
+        "HP_DROPOUT": 0.2,
+        "HP_SCHED_PATIENCE": 8,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.4189807176589966,
+        "MSE": 77.07190704345703,
+        "RMSE": 8.779060715330372,
+        "MAE": 5.153903007507324,
+        "MAPE": 543.7592029571533,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/PatchTST/PatchTST_Best_20260409_131934_DT_NEE(20141201-20171130)/PatchTST_Best_20260409_131934_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 5,
+      "hp": {
+        "HP_BATCH_SIZE": 64,
+        "HP_EPOCHS": 160,
+        "HP_LR": 0.0002,
+        "HP_D_MODEL": 64,
+        "HP_E_LAYERS": 2,
+        "HP_DROPOUT": 0.2,
+        "HP_SCHED_PATIENCE": 8,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.4037857055664062,
+        "MSE": 79.08751678466797,
+        "RMSE": 8.893116258357807,
+        "MAE": 5.0712103843688965,
+        "MAPE": 510.4382514953613,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/PatchTST/PatchTST_Best_20260409_132715_DT_NEE(20141201-20171130)/PatchTST_Best_20260409_132715_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 6,
+      "hp": {
+        "HP_BATCH_SIZE": 64,
+        "HP_EPOCHS": 80,
+        "HP_LR": 0.0001,
+        "HP_D_MODEL": 128,
+        "HP_E_LAYERS": 2,
+        "HP_DROPOUT": 0.1,
+        "HP_SCHED_PATIENCE": 8,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.3683995008468628,
+        "MSE": 83.78148651123047,
+        "RMSE": 9.153222739081054,
+        "MAE": 5.683759689331055,
+        "MAPE": 887.3587608337402,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/PatchTST/PatchTST_Best_20260409_133043_DT_NEE(20141201-20171130)/PatchTST_Best_20260409_133043_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 7,
+      "hp": {
+        "HP_BATCH_SIZE": 64,
+        "HP_EPOCHS": 120,
+        "HP_LR": 0.0003,
+        "HP_D_MODEL": 128,
+        "HP_E_LAYERS": 2,
+        "HP_DROPOUT": 0.2,
+        "HP_SCHED_PATIENCE": 8,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.4054614901542663,
+        "MSE": 78.865234375,
+        "RMSE": 8.880610022684252,
+        "MAE": 4.919677257537842,
+        "MAPE": 620.7237720489502,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/PatchTST/PatchTST_Best_20260409_133518_DT_NEE(20141201-20171130)/PatchTST_Best_20260409_133518_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 8,
+      "hp": {
+        "HP_BATCH_SIZE": 64,
+        "HP_EPOCHS": 80,
+        "HP_LR": 0.0003,
+        "HP_D_MODEL": 128,
+        "HP_E_LAYERS": 4,
+        "HP_DROPOUT": 0.2,
+        "HP_SCHED_PATIENCE": 8,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.3980538845062256,
+        "MSE": 79.84784698486328,
+        "RMSE": 8.935762249795106,
+        "MAE": 5.478793621063232,
+        "MAPE": 1172.864818572998,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/PatchTST/PatchTST_Best_20260409_133924_DT_NEE(20141201-20171130)/PatchTST_Best_20260409_133924_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    }
+  ],
+  "GRU": [
+    {
+      "trial": 1,
+      "hp": {
+        "HP_BATCH_SIZE": 96,
+        "HP_EPOCHS": 120,
+        "HP_LR": 0.0003,
+        "HP_HIDDEN_SIZE": 192,
+        "HP_NUM_LAYERS": 1,
+        "HP_SCHED_PATIENCE": 12,
+        "HP_EARLY_PATIENCE": 16,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.3793220520019531,
+        "MSE": 82.33261108398438,
+        "RMSE": 9.073731927050984,
+        "MAE": 5.422044277191162,
+        "MAPE": 934.4050407409668,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/GRU/GRU_Best_20260409_134041_DT_NEE(20141201-20171130)/GRU_Best_20260409_134041_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 2,
+      "hp": {
+        "HP_BATCH_SIZE": 32,
+        "HP_EPOCHS": 150,
+        "HP_LR": 0.0005,
+        "HP_HIDDEN_SIZE": 128,
+        "HP_NUM_LAYERS": 3,
+        "HP_SCHED_PATIENCE": 12,
+        "HP_EARLY_PATIENCE": 16,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.2535542249679565,
+        "MSE": 99.0156478881836,
+        "RMSE": 9.950660675964365,
+        "MAE": 6.341602802276611,
+        "MAPE": 1390.123462677002,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/GRU/GRU_Best_20260409_134256_DT_NEE(20141201-20171130)/GRU_Best_20260409_134256_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 3,
+      "hp": {
+        "HP_BATCH_SIZE": 64,
+        "HP_EPOCHS": 120,
+        "HP_LR": 0.0008,
+        "HP_HIDDEN_SIZE": 128,
+        "HP_NUM_LAYERS": 3,
+        "HP_SCHED_PATIENCE": 16,
+        "HP_EARLY_PATIENCE": 32,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.2916501760482788,
+        "MSE": 93.96224212646484,
+        "RMSE": 9.693412305605536,
+        "MAE": 6.181248188018799,
+        "MAPE": 771.0115432739258,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/GRU/GRU_Best_20260409_134516_DT_NEE(20141201-20171130)/GRU_Best_20260409_134516_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 4,
+      "hp": {
+        "HP_BATCH_SIZE": 96,
+        "HP_EPOCHS": 180,
+        "HP_LR": 0.0003,
+        "HP_HIDDEN_SIZE": 192,
+        "HP_NUM_LAYERS": 3,
+        "HP_SCHED_PATIENCE": 8,
+        "HP_EARLY_PATIENCE": 16,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.3875179290771484,
+        "MSE": 81.24543762207031,
+        "RMSE": 9.013625109913898,
+        "MAE": 5.2384562492370605,
+        "MAPE": 661.8980884552002,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/GRU/GRU_Best_20260409_134723_DT_NEE(20141201-20171130)/GRU_Best_20260409_134723_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 5,
+      "hp": {
+        "HP_BATCH_SIZE": 64,
+        "HP_EPOCHS": 150,
+        "HP_LR": 0.0008,
+        "HP_HIDDEN_SIZE": 192,
+        "HP_NUM_LAYERS": 3,
+        "HP_SCHED_PATIENCE": 8,
+        "HP_EARLY_PATIENCE": 32,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.285285472869873,
+        "MSE": 94.80651092529295,
+        "RMSE": 9.736863505528513,
+        "MAE": 6.343999862670898,
+        "MAPE": 873.9128112792969,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/GRU/GRU_Best_20260409_135144_DT_NEE(20141201-20171130)/GRU_Best_20260409_135144_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 6,
+      "hp": {
+        "HP_BATCH_SIZE": 32,
+        "HP_EPOCHS": 120,
+        "HP_LR": 0.0003,
+        "HP_HIDDEN_SIZE": 128,
+        "HP_NUM_LAYERS": 2,
+        "HP_SCHED_PATIENCE": 12,
+        "HP_EARLY_PATIENCE": 16,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.2813672423362732,
+        "MSE": 95.32626342773438,
+        "RMSE": 9.763516959975764,
+        "MAE": 6.147743701934815,
+        "MAPE": 1056.8411827087402,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/GRU/GRU_Best_20260409_135356_DT_NEE(20141201-20171130)/GRU_Best_20260409_135356_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 7,
+      "hp": {
+        "HP_BATCH_SIZE": 96,
+        "HP_EPOCHS": 180,
+        "HP_LR": 0.0005,
+        "HP_HIDDEN_SIZE": 64,
+        "HP_NUM_LAYERS": 3,
+        "HP_SCHED_PATIENCE": 12,
+        "HP_EARLY_PATIENCE": 24,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.2953031659126282,
+        "MSE": 93.47767639160156,
+        "RMSE": 9.668385407688378,
+        "MAE": 6.052861213684082,
+        "MAPE": 1715.314483642578,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/GRU/GRU_Best_20260409_135557_DT_NEE(20141201-20171130)/GRU_Best_20260409_135557_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 8,
+      "hp": {
+        "HP_BATCH_SIZE": 32,
+        "HP_EPOCHS": 150,
+        "HP_LR": 0.0003,
+        "HP_HIDDEN_SIZE": 64,
+        "HP_NUM_LAYERS": 3,
+        "HP_SCHED_PATIENCE": 16,
+        "HP_EARLY_PATIENCE": 32,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.3500352501869201,
+        "MSE": 86.21749114990234,
+        "RMSE": 9.285337427896865,
+        "MAE": 5.620779514312744,
+        "MAPE": 654.3118476867676,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/GRU/GRU_Best_20260409_135955_DT_NEE(20141201-20171130)/GRU_Best_20260409_135955_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    }
+  ],
+  "LSTM": [
+    {
+      "trial": 1,
+      "hp": {
+        "HP_BATCH_SIZE": 96,
+        "HP_EPOCHS": 180,
+        "HP_LR": 0.0005,
+        "HP_HIDDEN_SIZE": 192,
+        "HP_NUM_LAYERS": 2,
+        "HP_EARLY_PATIENCE": 20,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.2749375104904175,
+        "MSE": 96.17916870117188,
+        "RMSE": 9.807097873538934,
+        "MAE": 5.983368873596191,
+        "MAPE": 2889.931297302246,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/LSTM/LSTM_Best_20260409_140222_DT_NEE(20141201-20171130)/LSTM_Best_20260409_140222_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 2,
+      "hp": {
+        "HP_BATCH_SIZE": 32,
+        "HP_EPOCHS": 180,
+        "HP_LR": 0.0005,
+        "HP_HIDDEN_SIZE": 64,
+        "HP_NUM_LAYERS": 1,
+        "HP_EARLY_PATIENCE": 12,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.3740188479423523,
+        "MSE": 83.03607940673828,
+        "RMSE": 9.112413478696974,
+        "MAE": 5.348647117614746,
+        "MAPE": 769.9119567871094,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/LSTM/LSTM_Best_20260409_140425_DT_NEE(20141201-20171130)/LSTM_Best_20260409_140425_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 3,
+      "hp": {
+        "HP_BATCH_SIZE": 96,
+        "HP_EPOCHS": 120,
+        "HP_LR": 0.0008,
+        "HP_HIDDEN_SIZE": 128,
+        "HP_NUM_LAYERS": 3,
+        "HP_EARLY_PATIENCE": 12,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.3196582198143005,
+        "MSE": 90.24698638916016,
+        "RMSE": 9.499841387579066,
+        "MAE": 5.761609077453613,
+        "MAPE": 944.306468963623,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/LSTM/LSTM_Best_20260409_140528_DT_NEE(20141201-20171130)/LSTM_Best_20260409_140528_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 4,
+      "hp": {
+        "HP_BATCH_SIZE": 64,
+        "HP_EPOCHS": 180,
+        "HP_LR": 0.0005,
+        "HP_HIDDEN_SIZE": 192,
+        "HP_NUM_LAYERS": 2,
+        "HP_EARLY_PATIENCE": 28,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.1746714115142822,
+        "MSE": 109.47941589355467,
+        "RMSE": 10.46324117535072,
+        "MAE": 6.832545280456543,
+        "MAPE": 1727.5871276855469,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/LSTM/LSTM_Best_20260409_140929_DT_NEE(20141201-20171130)/LSTM_Best_20260409_140929_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 5,
+      "hp": {
+        "HP_BATCH_SIZE": 96,
+        "HP_EPOCHS": 180,
+        "HP_LR": 0.0003,
+        "HP_HIDDEN_SIZE": 192,
+        "HP_NUM_LAYERS": 3,
+        "HP_EARLY_PATIENCE": 20,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.3185651302337646,
+        "MSE": 90.39198303222656,
+        "RMSE": 9.507469854394836,
+        "MAE": 5.844838619232178,
+        "MAPE": 949.3423461914062,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/LSTM/LSTM_Best_20260409_141229_DT_NEE(20141201-20171130)/LSTM_Best_20260409_141229_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 6,
+      "hp": {
+        "HP_BATCH_SIZE": 32,
+        "HP_EPOCHS": 150,
+        "HP_LR": 0.0005,
+        "HP_HIDDEN_SIZE": 64,
+        "HP_NUM_LAYERS": 2,
+        "HP_EARLY_PATIENCE": 12,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.3317139744758606,
+        "MSE": 88.64779663085938,
+        "RMSE": 9.415295886527378,
+        "MAE": 5.789387702941895,
+        "MAPE": 1015.0020599365234,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/LSTM/LSTM_Best_20260409_141430_DT_NEE(20141201-20171130)/LSTM_Best_20260409_141430_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 7,
+      "hp": {
+        "HP_BATCH_SIZE": 96,
+        "HP_EPOCHS": 120,
+        "HP_LR": 0.0008,
+        "HP_HIDDEN_SIZE": 64,
+        "HP_NUM_LAYERS": 3,
+        "HP_EARLY_PATIENCE": 20,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.235372245311737,
+        "MSE": 101.42748260498048,
+        "RMSE": 10.071121218860414,
+        "MAE": 6.169851779937744,
+        "MAPE": 1147.0330238342283,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/LSTM/LSTM_Best_20260409_141547_DT_NEE(20141201-20171130)/LSTM_Best_20260409_141547_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 8,
+      "hp": {
+        "HP_BATCH_SIZE": 32,
+        "HP_EPOCHS": 150,
+        "HP_LR": 0.0003,
+        "HP_HIDDEN_SIZE": 192,
+        "HP_NUM_LAYERS": 3,
+        "HP_EARLY_PATIENCE": 12,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.3837732672691345,
+        "MSE": 81.74215698242188,
+        "RMSE": 9.041136929746274,
+        "MAE": 5.286070346832275,
+        "MAPE": 676.9700050354004,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/LSTM/LSTM_Best_20260409_141909_DT_NEE(20141201-20171130)/LSTM_Best_20260409_141909_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    }
+  ],
+  "LightGBM": [
+    {
+      "trial": 1,
+      "hp": {
+        "HP_N_ESTIMATORS": 700,
+        "HP_LR": 0.02,
+        "HP_MAX_DEPTH": -1,
+        "HP_NUM_LEAVES": 63,
+        "HP_MIN_CHILD_SAMPLES": 20,
+        "HP_REG_LAMBDA": 0.5,
+        "HP_SUBSAMPLE": 0.8,
+        "HP_COLSAMPLE": 0.8,
+        "HP_EARLY_STOP_ROUNDS": 80,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.4306677579879761,
+        "MSE": 75.5216293334961,
+        "RMSE": 8.69031813764583,
+        "MAE": 5.022700309753418,
+        "MAPE": 610.4885101318359,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/LightGBM/LightGBM_Best_20260409_142436_DT_NEE(20141201-20171130)/LightGBM_Best_20260409_142436_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 2,
+      "hp": {
+        "HP_N_ESTIMATORS": 400,
+        "HP_LR": 0.05,
+        "HP_MAX_DEPTH": 8,
+        "HP_NUM_LEAVES": 31,
+        "HP_MIN_CHILD_SAMPLES": 30,
+        "HP_REG_LAMBDA": 0.5,
+        "HP_SUBSAMPLE": 0.8,
+        "HP_COLSAMPLE": 1.0,
+        "HP_EARLY_STOP_ROUNDS": 50,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.4302421808242798,
+        "MSE": 75.57807922363281,
+        "RMSE": 8.693565391922512,
+        "MAE": 4.981720447540283,
+        "MAPE": 588.8533115386963,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/LightGBM/LightGBM_Best_20260409_142732_DT_NEE(20141201-20171130)/LightGBM_Best_20260409_142732_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 3,
+      "hp": {
+        "HP_N_ESTIMATORS": 700,
+        "HP_LR": 0.05,
+        "HP_MAX_DEPTH": 12,
+        "HP_NUM_LEAVES": 63,
+        "HP_MIN_CHILD_SAMPLES": 10,
+        "HP_REG_LAMBDA": 3.0,
+        "HP_SUBSAMPLE": 1.0,
+        "HP_COLSAMPLE": 1.0,
+        "HP_EARLY_STOP_ROUNDS": 30,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.4202771186828613,
+        "MSE": 76.89994812011719,
+        "RMSE": 8.76926154930489,
+        "MAE": 4.972446441650391,
+        "MAPE": 532.6507091522217,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/LightGBM/LightGBM_Best_20260409_142850_DT_NEE(20141201-20171130)/LightGBM_Best_20260409_142850_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 4,
+      "hp": {
+        "HP_N_ESTIMATORS": 700,
+        "HP_LR": 0.05,
+        "HP_MAX_DEPTH": 12,
+        "HP_NUM_LEAVES": 63,
+        "HP_MIN_CHILD_SAMPLES": 20,
+        "HP_REG_LAMBDA": 3.0,
+        "HP_SUBSAMPLE": 0.9,
+        "HP_COLSAMPLE": 0.8,
+        "HP_EARLY_STOP_ROUNDS": 30,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.4305543899536133,
+        "MSE": 75.53666687011719,
+        "RMSE": 8.691183283656903,
+        "MAE": 5.009893417358398,
+        "MAPE": 580.8492660522461,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/LightGBM/LightGBM_Best_20260409_143148_DT_NEE(20141201-20171130)/LightGBM_Best_20260409_143148_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 5,
+      "hp": {
+        "HP_N_ESTIMATORS": 400,
+        "HP_LR": 0.03,
+        "HP_MAX_DEPTH": -1,
+        "HP_NUM_LEAVES": 127,
+        "HP_MIN_CHILD_SAMPLES": 30,
+        "HP_REG_LAMBDA": 0.5,
+        "HP_SUBSAMPLE": 1.0,
+        "HP_COLSAMPLE": 0.8,
+        "HP_EARLY_STOP_ROUNDS": 30,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.4200875163078308,
+        "MSE": 76.92509460449219,
+        "RMSE": 8.770695217854295,
+        "MAE": 5.170409202575684,
+        "MAPE": 742.9385662078857,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/LightGBM/LightGBM_Best_20260409_143638_DT_NEE(20141201-20171130)/LightGBM_Best_20260409_143638_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 6,
+      "hp": {
+        "HP_N_ESTIMATORS": 1000,
+        "HP_LR": 0.05,
+        "HP_MAX_DEPTH": -1,
+        "HP_NUM_LEAVES": 31,
+        "HP_MIN_CHILD_SAMPLES": 10,
+        "HP_REG_LAMBDA": 0.5,
+        "HP_SUBSAMPLE": 0.9,
+        "HP_COLSAMPLE": 0.8,
+        "HP_EARLY_STOP_ROUNDS": 80,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.4324155449867248,
+        "MSE": 75.28978729248047,
+        "RMSE": 8.676968784805007,
+        "MAE": 4.9398112297058105,
+        "MAPE": 569.1501140594482,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/LightGBM/LightGBM_Best_20260409_143948_DT_NEE(20141201-20171130)/LightGBM_Best_20260409_143948_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 7,
+      "hp": {
+        "HP_N_ESTIMATORS": 700,
+        "HP_LR": 0.05,
+        "HP_MAX_DEPTH": 8,
+        "HP_NUM_LEAVES": 31,
+        "HP_MIN_CHILD_SAMPLES": 30,
+        "HP_REG_LAMBDA": 0.5,
+        "HP_SUBSAMPLE": 1.0,
+        "HP_COLSAMPLE": 1.0,
+        "HP_EARLY_STOP_ROUNDS": 80,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.4250124096870422,
+        "MSE": 76.27180480957031,
+        "RMSE": 8.73337304880367,
+        "MAE": 4.978573799133301,
+        "MAPE": 591.9398307800293,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/LightGBM/LightGBM_Best_20260409_144100_DT_NEE(20141201-20171130)/LightGBM_Best_20260409_144100_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 8,
+      "hp": {
+        "HP_N_ESTIMATORS": 400,
+        "HP_LR": 0.03,
+        "HP_MAX_DEPTH": 8,
+        "HP_NUM_LEAVES": 31,
+        "HP_MIN_CHILD_SAMPLES": 10,
+        "HP_REG_LAMBDA": 0.5,
+        "HP_SUBSAMPLE": 1.0,
+        "HP_COLSAMPLE": 0.9,
+        "HP_EARLY_STOP_ROUNDS": 50,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.4285141229629516,
+        "MSE": 75.80731201171875,
+        "RMSE": 8.706739459276289,
+        "MAE": 4.935184478759766,
+        "MAPE": 561.6461277008057,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/LightGBM/LightGBM_Best_20260409_144214_DT_NEE(20141201-20171130)/LightGBM_Best_20260409_144214_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    }
+  ],
+  "iTransformer": [
+    {
+      "trial": 1,
+      "hp": {
+        "HP_BATCH_SIZE": 64,
+        "HP_EPOCHS": 120,
+        "HP_LR": 0.0003,
+        "HP_D_MODEL": 64,
+        "HP_N_HEADS": 4,
+        "HP_E_LAYERS": 2,
+        "HP_D_FF": 256,
+        "HP_DROPOUT": 0.2,
+        "HP_SCHED_PATIENCE": 8,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.4232161045074463,
+        "MSE": 76.51008605957031,
+        "RMSE": 8.747004404913165,
+        "MAE": 5.064208507537842,
+        "MAPE": 563.0941867828369,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/iTransformer/iTransformer_Best_20260409_144648_DT_NEE(20141201-20171130)/iTransformer_Best_20260409_144648_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 2,
+      "hp": {
+        "HP_BATCH_SIZE": 32,
+        "HP_EPOCHS": 80,
+        "HP_LR": 0.0001,
+        "HP_D_MODEL": 192,
+        "HP_N_HEADS": 8,
+        "HP_E_LAYERS": 2,
+        "HP_D_FF": 256,
+        "HP_DROPOUT": 0.05,
+        "HP_SCHED_PATIENCE": 8,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.4203795194625854,
+        "MSE": 76.88636016845703,
+        "RMSE": 8.768486766167639,
+        "MAE": 5.3073320388793945,
+        "MAPE": 1214.257526397705,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/iTransformer/iTransformer_Best_20260409_145155_DT_NEE(20141201-20171130)/iTransformer_Best_20260409_145155_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 3,
+      "hp": {
+        "HP_BATCH_SIZE": 32,
+        "HP_EPOCHS": 80,
+        "HP_LR": 0.0002,
+        "HP_D_MODEL": 192,
+        "HP_N_HEADS": 4,
+        "HP_E_LAYERS": 2,
+        "HP_D_FF": 384,
+        "HP_DROPOUT": 0.2,
+        "HP_SCHED_PATIENCE": 6,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.3961954116821289,
+        "MSE": 80.09436798095703,
+        "RMSE": 8.949545685729362,
+        "MAE": 5.648339748382568,
+        "MAPE": 720.6887245178223,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/iTransformer/iTransformer_Best_20260409_145643_DT_NEE(20141201-20171130)/iTransformer_Best_20260409_145643_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 4,
+      "hp": {
+        "HP_BATCH_SIZE": 32,
+        "HP_EPOCHS": 80,
+        "HP_LR": 0.0002,
+        "HP_D_MODEL": 128,
+        "HP_N_HEADS": 8,
+        "HP_E_LAYERS": 2,
+        "HP_D_FF": 256,
+        "HP_DROPOUT": 0.05,
+        "HP_SCHED_PATIENCE": 6,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.3953275680541992,
+        "MSE": 80.20948791503906,
+        "RMSE": 8.955974984056123,
+        "MAE": 5.516695976257324,
+        "MAPE": 891.1344528198242,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/iTransformer/iTransformer_Best_20260409_150130_DT_NEE(20141201-20171130)/iTransformer_Best_20260409_150130_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 5,
+      "hp": {
+        "HP_BATCH_SIZE": 32,
+        "HP_EPOCHS": 120,
+        "HP_LR": 0.0002,
+        "HP_D_MODEL": 128,
+        "HP_N_HEADS": 8,
+        "HP_E_LAYERS": 3,
+        "HP_D_FF": 384,
+        "HP_DROPOUT": 0.2,
+        "HP_SCHED_PATIENCE": 12,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.3815376162528991,
+        "MSE": 82.0387191772461,
+        "RMSE": 9.05752279474063,
+        "MAE": 5.557435989379883,
+        "MAPE": 1020.915699005127,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/iTransformer/iTransformer_Best_20260409_150915_DT_NEE(20141201-20171130)/iTransformer_Best_20260409_150915_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 6,
+      "hp": {
+        "HP_BATCH_SIZE": 32,
+        "HP_EPOCHS": 80,
+        "HP_LR": 0.0002,
+        "HP_D_MODEL": 64,
+        "HP_N_HEADS": 4,
+        "HP_E_LAYERS": 4,
+        "HP_D_FF": 384,
+        "HP_DROPOUT": 0.2,
+        "HP_SCHED_PATIENCE": 6,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.4302806258201599,
+        "MSE": 75.5729751586914,
+        "RMSE": 8.693271832784903,
+        "MAE": 4.876260280609131,
+        "MAPE": 470.31311988830566,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/iTransformer/iTransformer_Best_20260409_151714_DT_NEE(20141201-20171130)/iTransformer_Best_20260409_151714_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 7,
+      "hp": {
+        "HP_BATCH_SIZE": 32,
+        "HP_EPOCHS": 80,
+        "HP_LR": 0.0003,
+        "HP_D_MODEL": 128,
+        "HP_N_HEADS": 4,
+        "HP_E_LAYERS": 2,
+        "HP_D_FF": 384,
+        "HP_DROPOUT": 0.05,
+        "HP_SCHED_PATIENCE": 6,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.3797115087509155,
+        "MSE": 82.28095245361328,
+        "RMSE": 9.070884877100651,
+        "MAE": 5.511665344238281,
+        "MAPE": 796.648645401001,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/iTransformer/iTransformer_Best_20260409_152123_DT_NEE(20141201-20171130)/iTransformer_Best_20260409_152123_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 8,
+      "hp": {
+        "HP_BATCH_SIZE": 96,
+        "HP_EPOCHS": 80,
+        "HP_LR": 0.0003,
+        "HP_D_MODEL": 64,
+        "HP_N_HEADS": 8,
+        "HP_E_LAYERS": 2,
+        "HP_D_FF": 384,
+        "HP_DROPOUT": 0.05,
+        "HP_SCHED_PATIENCE": 12,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.4008955955505371,
+        "MSE": 79.47088623046875,
+        "RMSE": 8.914644481440005,
+        "MAE": 5.456418991088867,
+        "MAPE": 1119.067096710205,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/iTransformer/iTransformer_Best_20260409_152403_DT_NEE(20141201-20171130)/iTransformer_Best_20260409_152403_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    }
+  ],
+  "Informer": [
+    {
+      "trial": 1,
+      "hp": {
+        "HP_BATCH_SIZE": 96,
+        "HP_EPOCHS": 80,
+        "HP_LR": 0.0002,
+        "HP_D_MODEL": 192,
+        "HP_N_HEADS": 8,
+        "HP_E_LAYERS": 3,
+        "HP_D_LAYERS": 1,
+        "HP_D_FF": 384,
+        "HP_DROPOUT": 0.1,
+        "HP_SCHED_PATIENCE": 8,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.2407116889953613,
+        "MSE": 100.71920776367188,
+        "RMSE": 10.035895962178556,
+        "MAE": 6.33807373046875,
+        "MAPE": 744.0418720245361,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/Informer/Informer_Best_20260409_153107_DT_NEE(20141201-20171130)/Informer_Best_20260409_153107_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 2,
+      "hp": {
+        "HP_BATCH_SIZE": 64,
+        "HP_EPOCHS": 120,
+        "HP_LR": 0.0001,
+        "HP_D_MODEL": 192,
+        "HP_N_HEADS": 8,
+        "HP_E_LAYERS": 3,
+        "HP_D_LAYERS": 2,
+        "HP_D_FF": 128,
+        "HP_DROPOUT": 0.03,
+        "HP_SCHED_PATIENCE": 8,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.2862640619277954,
+        "MSE": 94.67670440673828,
+        "RMSE": 9.73019549684066,
+        "MAE": 6.287185192108154,
+        "MAPE": 1814.5774841308596,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/Informer/Informer_Best_20260409_154108_DT_NEE(20141201-20171130)/Informer_Best_20260409_154108_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 3,
+      "hp": {
+        "HP_BATCH_SIZE": 32,
+        "HP_EPOCHS": 160,
+        "HP_LR": 0.0001,
+        "HP_D_MODEL": 192,
+        "HP_N_HEADS": 8,
+        "HP_E_LAYERS": 2,
+        "HP_D_LAYERS": 2,
+        "HP_D_FF": 128,
+        "HP_DROPOUT": 0.03,
+        "HP_SCHED_PATIENCE": 8,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.1687151193618774,
+        "MSE": 110.26951599121094,
+        "RMSE": 10.500929291791795,
+        "MAE": 6.8144307136535645,
+        "MAPE": 928.0213356018066,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/Informer/Informer_Best_20260409_160158_DT_NEE(20141201-20171130)/Informer_Best_20260409_160158_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 4,
+      "hp": {
+        "HP_BATCH_SIZE": 32,
+        "HP_EPOCHS": 120,
+        "HP_LR": 0.0003,
+        "HP_D_MODEL": 192,
+        "HP_N_HEADS": 8,
+        "HP_E_LAYERS": 4,
+        "HP_D_LAYERS": 3,
+        "HP_D_FF": 384,
+        "HP_DROPOUT": 0.03,
+        "HP_SCHED_PATIENCE": 12,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.4080690741539001,
+        "MSE": 78.51933288574219,
+        "RMSE": 8.861113524029708,
+        "MAE": 5.267013072967529,
+        "MAPE": 544.0475940704346,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/Informer/Informer_Best_20260409_162331_DT_NEE(20141201-20171130)/Informer_Best_20260409_162331_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 5,
+      "hp": {
+        "HP_BATCH_SIZE": 96,
+        "HP_EPOCHS": 80,
+        "HP_LR": 0.0001,
+        "HP_D_MODEL": 128,
+        "HP_N_HEADS": 4,
+        "HP_E_LAYERS": 2,
+        "HP_D_LAYERS": 3,
+        "HP_D_FF": 384,
+        "HP_DROPOUT": 0.03,
+        "HP_SCHED_PATIENCE": 8,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.3434786200523376,
+        "MSE": 87.08722686767578,
+        "RMSE": 9.33205373257547,
+        "MAE": 5.816453456878662,
+        "MAPE": 690.7084941864014,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/Informer/Informer_Best_20260409_162951_DT_NEE(20141201-20171130)/Informer_Best_20260409_162951_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 6,
+      "hp": {
+        "HP_BATCH_SIZE": 96,
+        "HP_EPOCHS": 80,
+        "HP_LR": 0.0003,
+        "HP_D_MODEL": 128,
+        "HP_N_HEADS": 4,
+        "HP_E_LAYERS": 4,
+        "HP_D_LAYERS": 3,
+        "HP_D_FF": 256,
+        "HP_DROPOUT": 0.1,
+        "HP_SCHED_PATIENCE": 8,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.3337106704711914,
+        "MSE": 88.3829345703125,
+        "RMSE": 9.40121984480272,
+        "MAE": 5.558557033538818,
+        "MAPE": 865.8367156982422,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/Informer/Informer_Best_20260409_163543_DT_NEE(20141201-20171130)/Informer_Best_20260409_163543_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 7,
+      "hp": {
+        "HP_BATCH_SIZE": 32,
+        "HP_EPOCHS": 80,
+        "HP_LR": 0.0003,
+        "HP_D_MODEL": 128,
+        "HP_N_HEADS": 8,
+        "HP_E_LAYERS": 2,
+        "HP_D_LAYERS": 1,
+        "HP_D_FF": 256,
+        "HP_DROPOUT": 0.03,
+        "HP_SCHED_PATIENCE": 12,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.3205471038818359,
+        "MSE": 90.12907409667967,
+        "RMSE": 9.49363334538888,
+        "MAE": 5.859607219696045,
+        "MAPE": 847.8014945983887,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/Informer/Informer_Best_20260409_164408_DT_NEE(20141201-20171130)/Informer_Best_20260409_164408_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 8,
+      "hp": {
+        "HP_BATCH_SIZE": 32,
+        "HP_EPOCHS": 160,
+        "HP_LR": 0.0002,
+        "HP_D_MODEL": 192,
+        "HP_N_HEADS": 8,
+        "HP_E_LAYERS": 4,
+        "HP_D_LAYERS": 1,
+        "HP_D_FF": 128,
+        "HP_DROPOUT": 0.03,
+        "HP_SCHED_PATIENCE": 12,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.2200746536254882,
+        "MSE": 103.45669555664062,
+        "RMSE": 10.1713664547415,
+        "MAE": 6.28560209274292,
+        "MAPE": 695.5761432647705,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/Informer/Informer_Best_20260409_170606_DT_NEE(20141201-20171130)/Informer_Best_20260409_170606_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    }
+  ],
+  "ExoTST": [
+    {
+      "trial": 1,
+      "hp": {
+        "HP_BATCH_SIZE": 96,
+        "HP_EPOCHS": 80,
+        "HP_LR": 0.0002,
+        "HP_D_MODEL": 256,
+        "HP_N_HEADS": 4,
+        "HP_E_LAYERS": 3,
+        "HP_D_FF": 256,
+        "HP_DROPOUT": 0.1,
+        "HP_SCHED_PATIENCE": 8,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.440044105052948,
+        "MSE": 74.27786254882812,
+        "RMSE": 8.61846056722592,
+        "MAE": 5.080320358276367,
+        "MAPE": 383.45229625701904,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/ExoTST/ExoTST_Best_20260409_170806_DT_NEE(20141201-20171130)/ExoTST_Best_20260409_170806_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 2,
+      "hp": {
+        "HP_BATCH_SIZE": 32,
+        "HP_EPOCHS": 120,
+        "HP_LR": 0.0001,
+        "HP_D_MODEL": 256,
+        "HP_N_HEADS": 4,
+        "HP_E_LAYERS": 4,
+        "HP_D_FF": 256,
+        "HP_DROPOUT": 0.15,
+        "HP_SCHED_PATIENCE": 12,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.4296249151229858,
+        "MSE": 75.65996551513672,
+        "RMSE": 8.698273708911252,
+        "MAE": 5.223545074462891,
+        "MAPE": 306.3730001449585,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/ExoTST/ExoTST_Best_20260409_171740_DT_NEE(20141201-20171130)/ExoTST_Best_20260409_171740_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 3,
+      "hp": {
+        "HP_BATCH_SIZE": 96,
+        "HP_EPOCHS": 160,
+        "HP_LR": 0.0001,
+        "HP_D_MODEL": 128,
+        "HP_N_HEADS": 4,
+        "HP_E_LAYERS": 2,
+        "HP_D_FF": 384,
+        "HP_DROPOUT": 0.1,
+        "HP_SCHED_PATIENCE": 6,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.4722729325294494,
+        "MSE": 70.00272369384766,
+        "RMSE": 8.366763035597916,
+        "MAE": 4.849380970001221,
+        "MAPE": 431.82435035705566,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/ExoTST/ExoTST_Best_20260409_172109_DT_NEE(20141201-20171130)/ExoTST_Best_20260409_172109_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 4,
+      "hp": {
+        "HP_BATCH_SIZE": 64,
+        "HP_EPOCHS": 160,
+        "HP_LR": 0.0003,
+        "HP_D_MODEL": 128,
+        "HP_N_HEADS": 8,
+        "HP_E_LAYERS": 2,
+        "HP_D_FF": 512,
+        "HP_DROPOUT": 0.1,
+        "HP_SCHED_PATIENCE": 8,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.4489920139312744,
+        "MSE": 73.09092712402344,
+        "RMSE": 8.54932319683982,
+        "MAE": 5.0964860916137695,
+        "MAPE": 599.7130870819092,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/ExoTST/ExoTST_Best_20260409_172549_DT_NEE(20141201-20171130)/ExoTST_Best_20260409_172549_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 5,
+      "hp": {
+        "HP_BATCH_SIZE": 64,
+        "HP_EPOCHS": 80,
+        "HP_LR": 0.0001,
+        "HP_D_MODEL": 192,
+        "HP_N_HEADS": 8,
+        "HP_E_LAYERS": 3,
+        "HP_D_FF": 256,
+        "HP_DROPOUT": 0.1,
+        "HP_SCHED_PATIENCE": 6,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.4420291781425476,
+        "MSE": 74.01454162597656,
+        "RMSE": 8.603170440365375,
+        "MAE": 5.106600761413574,
+        "MAPE": 454.7980785369873,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/ExoTST/ExoTST_Best_20260409_172846_DT_NEE(20141201-20171130)/ExoTST_Best_20260409_172846_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 6,
+      "hp": {
+        "HP_BATCH_SIZE": 64,
+        "HP_EPOCHS": 120,
+        "HP_LR": 0.0002,
+        "HP_D_MODEL": 128,
+        "HP_N_HEADS": 8,
+        "HP_E_LAYERS": 3,
+        "HP_D_FF": 512,
+        "HP_DROPOUT": 0.2,
+        "HP_SCHED_PATIENCE": 8,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.4649764895439148,
+        "MSE": 70.97059631347656,
+        "RMSE": 8.424404804701432,
+        "MAE": 4.949894428253174,
+        "MAPE": 354.7593832015991,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/ExoTST/ExoTST_Best_20260409_173300_DT_NEE(20141201-20171130)/ExoTST_Best_20260409_173300_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 7,
+      "hp": {
+        "HP_BATCH_SIZE": 32,
+        "HP_EPOCHS": 80,
+        "HP_LR": 0.0002,
+        "HP_D_MODEL": 128,
+        "HP_N_HEADS": 8,
+        "HP_E_LAYERS": 2,
+        "HP_D_FF": 256,
+        "HP_DROPOUT": 0.2,
+        "HP_SCHED_PATIENCE": 8,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.4662328958511352,
+        "MSE": 70.80393981933594,
+        "RMSE": 8.414507699166716,
+        "MAE": 4.900167942047119,
+        "MAPE": 366.3084983825684,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/ExoTST/ExoTST_Best_20260409_173721_DT_NEE(20141201-20171130)/ExoTST_Best_20260409_173721_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 8,
+      "hp": {
+        "HP_BATCH_SIZE": 96,
+        "HP_EPOCHS": 120,
+        "HP_LR": 0.0002,
+        "HP_D_MODEL": 256,
+        "HP_N_HEADS": 4,
+        "HP_E_LAYERS": 3,
+        "HP_D_FF": 512,
+        "HP_DROPOUT": 0.1,
+        "HP_SCHED_PATIENCE": 8,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.4221816658973694,
+        "MSE": 76.64730834960938,
+        "RMSE": 8.754844850116385,
+        "MAE": 5.217164516448975,
+        "MAPE": 315.2602195739746,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/ExoTST/ExoTST_Best_20260409_174014_DT_NEE(20141201-20171130)/ExoTST_Best_20260409_174014_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    }
+  ],
+  "TCN": [
+    {
+      "trial": 1,
+      "hp": {
+        "HP_BATCH_SIZE": 96,
+        "HP_EPOCHS": 150,
+        "HP_LR": 0.0001,
+        "HP_D_MODEL": 128,
+        "HP_E_LAYERS": 6,
+        "HP_DROPOUT": 0.2,
+        "HP_SCHED_PATIENCE": 12,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.3142305016517639,
+        "MSE": 90.96697235107422,
+        "RMSE": 9.537660737889256,
+        "MAE": 5.9804511070251465,
+        "MAPE": 2437.6903533935547,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/TCN/TCN_Best_20260409_174242_DT_NEE(20141201-20171130)/TCN_Best_20260409_174242_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 2,
+      "hp": {
+        "HP_BATCH_SIZE": 64,
+        "HP_EPOCHS": 150,
+        "HP_LR": 0.0001,
+        "HP_D_MODEL": 128,
+        "HP_E_LAYERS": 5,
+        "HP_DROPOUT": 0.2,
+        "HP_SCHED_PATIENCE": 8,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.3419287204742431,
+        "MSE": 87.29281616210938,
+        "RMSE": 9.343062461640152,
+        "MAE": 5.741438388824463,
+        "MAPE": 2130.5429458618164,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/TCN/TCN_Best_20260409_174551_DT_NEE(20141201-20171130)/TCN_Best_20260409_174551_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 3,
+      "hp": {
+        "HP_BATCH_SIZE": 96,
+        "HP_EPOCHS": 150,
+        "HP_LR": 0.0005,
+        "HP_D_MODEL": 96,
+        "HP_E_LAYERS": 6,
+        "HP_DROPOUT": 0.15,
+        "HP_SCHED_PATIENCE": 8,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.3633696436882019,
+        "MSE": 84.44869232177734,
+        "RMSE": 9.189596961879086,
+        "MAE": 5.425868034362793,
+        "MAPE": 1102.2205352783203,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/TCN/TCN_Best_20260409_174828_DT_NEE(20141201-20171130)/TCN_Best_20260409_174828_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 4,
+      "hp": {
+        "HP_BATCH_SIZE": 96,
+        "HP_EPOCHS": 150,
+        "HP_LR": 0.0005,
+        "HP_D_MODEL": 64,
+        "HP_E_LAYERS": 4,
+        "HP_DROPOUT": 0.15,
+        "HP_SCHED_PATIENCE": 12,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.3909651041030884,
+        "MSE": 80.78816986083984,
+        "RMSE": 8.988223954755458,
+        "MAE": 5.175800800323486,
+        "MAPE": 586.7302894592285,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/TCN/TCN_Best_20260409_175050_DT_NEE(20141201-20171130)/TCN_Best_20260409_175050_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 5,
+      "hp": {
+        "HP_BATCH_SIZE": 96,
+        "HP_EPOCHS": 200,
+        "HP_LR": 0.0001,
+        "HP_D_MODEL": 128,
+        "HP_E_LAYERS": 6,
+        "HP_DROPOUT": 0.15,
+        "HP_SCHED_PATIENCE": 8,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.3151549100875854,
+        "MSE": 90.84435272216795,
+        "RMSE": 9.531230388683715,
+        "MAE": 5.925431728363037,
+        "MAPE": 2196.479606628418,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/TCN/TCN_Best_20260409_175403_DT_NEE(20141201-20171130)/TCN_Best_20260409_175403_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 6,
+      "hp": {
+        "HP_BATCH_SIZE": 64,
+        "HP_EPOCHS": 150,
+        "HP_LR": 0.0001,
+        "HP_D_MODEL": 96,
+        "HP_E_LAYERS": 6,
+        "HP_DROPOUT": 0.2,
+        "HP_SCHED_PATIENCE": 12,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.356671929359436,
+        "MSE": 85.3371353149414,
+        "RMSE": 9.237810093032948,
+        "MAE": 5.4954833984375,
+        "MAPE": 1286.087417602539,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/TCN/TCN_Best_20260409_175833_DT_NEE(20141201-20171130)/TCN_Best_20260409_175833_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 7,
+      "hp": {
+        "HP_BATCH_SIZE": 64,
+        "HP_EPOCHS": 150,
+        "HP_LR": 0.0003,
+        "HP_D_MODEL": 128,
+        "HP_E_LAYERS": 4,
+        "HP_DROPOUT": 0.2,
+        "HP_SCHED_PATIENCE": 8,
+        "HP_USE_PCA": 0
+      },
+      "metrics": {
+        "R2": 0.379124104976654,
+        "MSE": 82.35887145996094,
+        "RMSE": 9.075178866554694,
+        "MAE": 5.346902370452881,
+        "MAPE": 819.7000503540039,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/TCN/TCN_Best_20260409_180134_DT_NEE(20141201-20171130)/TCN_Best_20260409_180134_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    },
+    {
+      "trial": 8,
+      "hp": {
+        "HP_BATCH_SIZE": 96,
+        "HP_EPOCHS": 100,
+        "HP_LR": 0.0003,
+        "HP_D_MODEL": 128,
+        "HP_E_LAYERS": 6,
+        "HP_DROPOUT": 0.2,
+        "HP_SCHED_PATIENCE": 12,
+        "HP_USE_PCA": 1
+      },
+      "metrics": {
+        "R2": 0.3647090792655945,
+        "MSE": 84.2710189819336,
+        "RMSE": 9.1799247808429,
+        "MAE": 5.416192054748535,
+        "MAPE": 1347.8983879089355,
+        "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/TCN/TCN_Best_20260409_180322_DT_NEE(20141201-20171130)/TCN_Best_20260409_180322_DT_NEE(20141201-20171130)_metrics.csv"
+      }
+    }
+  ]
+}
