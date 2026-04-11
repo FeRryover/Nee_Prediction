@@ -1,0 +1,2 @@
+﻿Model,Best_R2,Best_HP,HP_USE_PCA,Metrics_File
+iTransformer,0.4177650213241577,"{""HP_BATCH_SIZE"": 32, ""HP_EPOCHS"": 120, ""HP_LR"": 0.0002, ""HP_D_MODEL"": 128, ""HP_N_HEADS"": 8, ""HP_E_LAYERS"": 2, ""HP_D_FF"": 256, ""HP_DROPOUT"": 0.1, ""HP_SCHED_PATIENCE"": 6, ""HP_USE_PCA"": 1}",1,/root/autodl-tmp/Nee_Prediction-main/tcn+informer/result_best/iTransformer/iTransformer_Best_20260410_160808_DT_NEE(20141201-20171130)/iTransformer_Best_20260410_160808_DT_NEE(20141201-20171130)_metrics.csv

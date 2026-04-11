@@ -1,0 +1,236 @@
+[
+  {
+    "trial": 1,
+    "hp": {
+      "HP_BATCH_SIZE": 96,
+      "HP_EPOCHS": 80,
+      "HP_LR": 0.0001,
+      "HP_D_MODEL": 128,
+      "HP_N_HEADS": 8,
+      "HP_E_LAYERS": 2,
+      "HP_D_LAYERS": 2,
+      "HP_D_FF": 128,
+      "HP_DROPOUT": 0.15,
+      "HP_FACTOR": 3,
+      "HP_SCHED_PATIENCE": 12,
+      "HP_EARLY_PATIENCE": 0.2,
+      "HP_USE_PCA": 0
+    },
+    "metrics": {
+      "R2": 0.5259143114089966,
+      "MSE": 62.97527313232422,
+      "RMSE": 7.935696134071932,
+      "MAE": 4.684484004974365,
+      "MAPE": 810.0380897521973,
+      "metrics_file": "/root/autodl-tmp/Nee_Prediction-main/tcn+informer/result_best/TCNInformer/TCNInformer_Best_20260410_114103_DT_NEE(20141201-20171130)/TCNInformer_Best_20260410_114103_DT_NEE(20141201-20171130)_metrics.csv"
+    }
+  },
+  {
+    "trial": 2,
+    "hp": {
+      "HP_BATCH_SIZE": 96,
+      "HP_EPOCHS": 120,
+      "HP_LR": 0.0001,
+      "HP_D_MODEL": 64,
+      "HP_N_HEADS": 4,
+      "HP_E_LAYERS": 2,
+      "HP_D_LAYERS": 2,
+      "HP_D_FF": 384,
+      "HP_DROPOUT": 0.15,
+      "HP_FACTOR": 3,
+      "HP_SCHED_PATIENCE": 12,
+      "HP_EARLY_PATIENCE": 0.1,
+      "HP_USE_PCA": 1
+    },
+    "metrics": {
+      "R2": 0.5260583758354187,
+      "MSE": 62.95613861083984,
+      "RMSE": 7.934490444309568,
+      "MAE": 4.643718719482422,
+      "MAPE": 913.6929512023926,
+      "metrics_file": "/root/autodl-tmp/Nee_Prediction-main/tcn+informer/result_best/TCNInformer/TCNInformer_Best_20260410_114849_DT_NEE(20141201-20171130)/TCNInformer_Best_20260410_114849_DT_NEE(20141201-20171130)_metrics.csv"
+    }
+  },
+  {
+    "trial": 3,
+    "hp": {
+      "HP_BATCH_SIZE": 32,
+      "HP_EPOCHS": 120,
+      "HP_LR": 0.0003,
+      "HP_D_MODEL": 96,
+      "HP_N_HEADS": 4,
+      "HP_E_LAYERS": 2,
+      "HP_D_LAYERS": 4,
+      "HP_D_FF": 256,
+      "HP_DROPOUT": 0.1,
+      "HP_FACTOR": 5,
+      "HP_SCHED_PATIENCE": 6,
+      "HP_EARLY_PATIENCE": 0.1,
+      "HP_USE_PCA": 1
+    },
+    "metrics": {
+      "R2": 0.5129790306091309,
+      "MSE": 64.69353485107422,
+      "RMSE": 8.043229130832605,
+      "MAE": 4.621815204620361,
+      "MAPE": 509.3421459197998,
+      "metrics_file": "/root/autodl-tmp/Nee_Prediction-main/tcn+informer/result_best/TCNInformer/TCNInformer_Best_20260410_124850_DT_NEE(20141201-20171130)/TCNInformer_Best_20260410_124850_DT_NEE(20141201-20171130)_metrics.csv"
+    }
+  },
+  {
+    "trial": 4,
+    "hp": {
+      "HP_BATCH_SIZE": 32,
+      "HP_EPOCHS": 80,
+      "HP_LR": 0.0002,
+      "HP_D_MODEL": 64,
+      "HP_N_HEADS": 8,
+      "HP_E_LAYERS": 3,
+      "HP_D_LAYERS": 4,
+      "HP_D_FF": 256,
+      "HP_DROPOUT": 0.05,
+      "HP_FACTOR": 7,
+      "HP_SCHED_PATIENCE": 8,
+      "HP_EARLY_PATIENCE": 0.2,
+      "HP_USE_PCA": 0
+    },
+    "metrics": {
+      "R2": 0.5035527944564819,
+      "MSE": 65.94567108154297,
+      "RMSE": 8.120694002457116,
+      "MAE": 4.739631652832031,
+      "MAPE": 623.1627464294434,
+      "metrics_file": "/root/autodl-tmp/Nee_Prediction-main/tcn+informer/result_best/TCNInformer/TCNInformer_Best_20260410_131836_DT_NEE(20141201-20171130)/TCNInformer_Best_20260410_131836_DT_NEE(20141201-20171130)_metrics.csv"
+    }
+  },
+  {
+    "trial": 5,
+    "hp": {
+      "HP_BATCH_SIZE": 64,
+      "HP_EPOCHS": 80,
+      "HP_LR": 0.0003,
+      "HP_D_MODEL": 96,
+      "HP_N_HEADS": 8,
+      "HP_E_LAYERS": 4,
+      "HP_D_LAYERS": 2,
+      "HP_D_FF": 384,
+      "HP_DROPOUT": 0.05,
+      "HP_FACTOR": 3,
+      "HP_SCHED_PATIENCE": 12,
+      "HP_EARLY_PATIENCE": 0.1,
+      "HP_USE_PCA": 1
+    },
+    "metrics": {
+      "R2": 0.4899190664291382,
+      "MSE": 67.7567138671875,
+      "RMSE": 8.231446644860641,
+      "MAE": 4.706035614013672,
+      "MAPE": 851.8571853637695,
+      "metrics_file": "/root/autodl-tmp/Nee_Prediction-main/tcn+informer/result_best/TCNInformer/TCNInformer_Best_20260410_132541_DT_NEE(20141201-20171130)/TCNInformer_Best_20260410_132541_DT_NEE(20141201-20171130)_metrics.csv"
+    }
+  },
+  {
+    "trial": 6,
+    "hp": {
+      "HP_BATCH_SIZE": 32,
+      "HP_EPOCHS": 80,
+      "HP_LR": 0.0001,
+      "HP_D_MODEL": 96,
+      "HP_N_HEADS": 8,
+      "HP_E_LAYERS": 3,
+      "HP_D_LAYERS": 4,
+      "HP_D_FF": 256,
+      "HP_DROPOUT": 0.05,
+      "HP_FACTOR": 5,
+      "HP_SCHED_PATIENCE": 8,
+      "HP_EARLY_PATIENCE": 0.1,
+      "HP_USE_PCA": 1
+    },
+    "metrics": {
+      "R2": 0.5069594383239746,
+      "MSE": 65.4931411743164,
+      "RMSE": 8.092783277359922,
+      "MAE": 4.611483097076416,
+      "MAPE": 623.6028671264648,
+      "metrics_file": "/root/autodl-tmp/Nee_Prediction-main/tcn+informer/result_best/TCNInformer/TCNInformer_Best_20260410_134457_DT_NEE(20141201-20171130)/TCNInformer_Best_20260410_134457_DT_NEE(20141201-20171130)_metrics.csv"
+    }
+  },
+  {
+    "trial": 7,
+    "hp": {
+      "HP_BATCH_SIZE": 96,
+      "HP_EPOCHS": 160,
+      "HP_LR": 0.0003,
+      "HP_D_MODEL": 64,
+      "HP_N_HEADS": 4,
+      "HP_E_LAYERS": 4,
+      "HP_D_LAYERS": 4,
+      "HP_D_FF": 128,
+      "HP_DROPOUT": 0.05,
+      "HP_FACTOR": 5,
+      "HP_SCHED_PATIENCE": 8,
+      "HP_EARLY_PATIENCE": 0.15,
+      "HP_USE_PCA": 0
+    },
+    "metrics": {
+      "R2": 0.4619755744934082,
+      "MSE": 71.46858978271484,
+      "RMSE": 8.45390973353246,
+      "MAE": 4.981935024261475,
+      "MAPE": 670.3467845916748,
+      "metrics_file": "/root/autodl-tmp/Nee_Prediction-main/tcn+informer/result_best/TCNInformer/TCNInformer_Best_20260410_140158_DT_NEE(20141201-20171130)/TCNInformer_Best_20260410_140158_DT_NEE(20141201-20171130)_metrics.csv"
+    }
+  },
+  {
+    "trial": 8,
+    "hp": {
+      "HP_BATCH_SIZE": 96,
+      "HP_EPOCHS": 120,
+      "HP_LR": 0.0001,
+      "HP_D_MODEL": 64,
+      "HP_N_HEADS": 4,
+      "HP_E_LAYERS": 3,
+      "HP_D_LAYERS": 3,
+      "HP_D_FF": 256,
+      "HP_DROPOUT": 0.05,
+      "HP_FACTOR": 3,
+      "HP_SCHED_PATIENCE": 12,
+      "HP_EARLY_PATIENCE": 0.2,
+      "HP_USE_PCA": 1
+    },
+    "metrics": {
+      "R2": 0.499678373336792,
+      "MSE": 66.4603271484375,
+      "RMSE": 8.152320353643955,
+      "MAE": 4.653354167938232,
+      "MAPE": 806.8343162536621,
+      "metrics_file": "/root/autodl-tmp/Nee_Prediction-main/tcn+informer/result_best/TCNInformer/TCNInformer_Best_20260410_141618_DT_NEE(20141201-20171130)/TCNInformer_Best_20260410_141618_DT_NEE(20141201-20171130)_metrics.csv"
+    }
+  },
+    {
+    "trial": 9,
+    "hp": {
+      "HP_BATCH_SIZE": 64,
+      "HP_EPOCHS": 120,
+      "HP_LR": 0.0002,
+      "HP_D_MODEL": 64,
+      "HP_N_HEADS": 4,
+      "HP_E_LAYERS": 3,
+      "HP_D_LAYERS": 3,
+      "HP_D_FF": 128,
+      "HP_DROPOUT": 0.1,
+      "HP_FACTOR": 5,
+      "HP_SCHED_PATIENCE": 8,
+      "HP_EARLY_PATIENCE": 0.15,
+      "HP_USE_PCA": 0
+    },
+    "metrics": {
+      "R2": 0.566289544105529,
+      "MSE": 57.6120300292968,
+      "RMSE": 7.59025889079528,
+      "MAE": 4.32097196578979,
+      "MAPE": 339.011883735656,
+      "metrics_file": "/root/autodl-tmp/Nee_Prediction-main/tcn+informer/result_best/TCNInformer/TCNInformer_Best_20260409_215022_DT_NEE(20141201-20171130)/TCNInformer_Best_20260409_215022_DT_NEE(20141201-20171130)_metrics.csv"
+    }
+  }
+]

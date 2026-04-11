@@ -1,0 +1,210 @@
+[
+  {
+    "trial": 1,
+    "hp": {
+      "HP_BATCH_SIZE": 96,
+      "HP_EPOCHS": 80,
+      "HP_LR": 0.0001,
+      "HP_D_MODEL": 128,
+      "HP_N_HEADS": 8,
+      "HP_E_LAYERS": 2,
+      "HP_D_LAYERS": 2,
+      "HP_D_FF": 128,
+      "HP_DROPOUT": 0.15,
+      "HP_FACTOR": 3,
+      "HP_SCHED_PATIENCE": 12,
+      "HP_EARLY_PATIENCE": 0.2,
+      "HP_USE_PCA": 0
+    },
+    "metrics": {
+      "R2": 0.3817555904388428,
+      "MSE": 81.1688003540039,
+      "RMSE": 9.00937291680192,
+      "MAE": 5.371514797210693,
+      "MAPE": 554.6494007110596,
+      "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/TCNInformer/TCNInformer_Best_20260410_101402_SX_NEE(20150715-20190424)/TCNInformer_Best_20260410_101402_SX_NEE(20150715-20190424)_metrics.csv"
+    }
+  },
+  {
+    "trial": 2,
+    "hp": {
+      "HP_BATCH_SIZE": 96,
+      "HP_EPOCHS": 120,
+      "HP_LR": 0.0001,
+      "HP_D_MODEL": 64,
+      "HP_N_HEADS": 4,
+      "HP_E_LAYERS": 2,
+      "HP_D_LAYERS": 2,
+      "HP_D_FF": 384,
+      "HP_DROPOUT": 0.15,
+      "HP_FACTOR": 3,
+      "HP_SCHED_PATIENCE": 12,
+      "HP_EARLY_PATIENCE": 0.1,
+      "HP_USE_PCA": 1
+    },
+    "metrics": {
+      "R2": 0.3851017951965332,
+      "MSE": 80.72947692871094,
+      "RMSE": 8.984958371006009,
+      "MAE": 5.351790428161621,
+      "MAPE": 668.2536125183105,
+      "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/TCNInformer/TCNInformer_Best_20260410_102009_SX_NEE(20150715-20190424)/TCNInformer_Best_20260410_102009_SX_NEE(20150715-20190424)_metrics.csv"
+    }
+  },
+  {
+    "trial": 3,
+    "hp": {
+      "HP_BATCH_SIZE": 32,
+      "HP_EPOCHS": 120,
+      "HP_LR": 0.0003,
+      "HP_D_MODEL": 96,
+      "HP_N_HEADS": 4,
+      "HP_E_LAYERS": 2,
+      "HP_D_LAYERS": 4,
+      "HP_D_FF": 256,
+      "HP_DROPOUT": 0.1,
+      "HP_FACTOR": 5,
+      "HP_SCHED_PATIENCE": 6,
+      "HP_EARLY_PATIENCE": 0.1,
+      "HP_USE_PCA": 1
+    },
+    "metrics": {
+      "R2": 0.3797627091407776,
+      "MSE": 81.4304428100586,
+      "RMSE": 9.023881803861274,
+      "MAE": 5.383267402648926,
+      "MAPE": 483.15067291259766,
+      "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/TCNInformer/TCNInformer_Best_20260410_103338_SX_NEE(20150715-20190424)/TCNInformer_Best_20260410_103338_SX_NEE(20150715-20190424)_metrics.csv"
+    }
+  },
+  {
+    "trial": 4,
+    "hp": {
+      "HP_BATCH_SIZE": 32,
+      "HP_EPOCHS": 80,
+      "HP_LR": 0.0002,
+      "HP_D_MODEL": 64,
+      "HP_N_HEADS": 8,
+      "HP_E_LAYERS": 3,
+      "HP_D_LAYERS": 4,
+      "HP_D_FF": 256,
+      "HP_DROPOUT": 0.05,
+      "HP_FACTOR": 7,
+      "HP_SCHED_PATIENCE": 8,
+      "HP_EARLY_PATIENCE": 0.2,
+      "HP_USE_PCA": 0
+    },
+    "metrics": {
+      "R2": 0.3388856053352356,
+      "MSE": 86.79716491699219,
+      "RMSE": 9.316499606450494,
+      "MAE": 5.520676612854004,
+      "MAPE": 632.4450969696045,
+      "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/TCNInformer/TCNInformer_Best_20260410_105326_SX_NEE(20150715-20190424)/TCNInformer_Best_20260410_105326_SX_NEE(20150715-20190424)_metrics.csv"
+    }
+  },
+  {
+    "trial": 5,
+    "hp": {
+      "HP_BATCH_SIZE": 64,
+      "HP_EPOCHS": 80,
+      "HP_LR": 0.0003,
+      "HP_D_MODEL": 96,
+      "HP_N_HEADS": 8,
+      "HP_E_LAYERS": 4,
+      "HP_D_LAYERS": 2,
+      "HP_D_FF": 384,
+      "HP_DROPOUT": 0.05,
+      "HP_FACTOR": 3,
+      "HP_SCHED_PATIENCE": 12,
+      "HP_EARLY_PATIENCE": 0.1,
+      "HP_USE_PCA": 1
+    },
+    "metrics": {
+      "R2": 0.3840208649635315,
+      "MSE": 80.87139892578125,
+      "RMSE": 8.992852657848967,
+      "MAE": 5.465598583221436,
+      "MAPE": 551.207160949707,
+      "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/TCNInformer/TCNInformer_Best_20260410_105757_SX_NEE(20150715-20190424)/TCNInformer_Best_20260410_105757_SX_NEE(20150715-20190424)_metrics.csv"
+    }
+  },
+  {
+    "trial": 6,
+    "hp": {
+      "HP_BATCH_SIZE": 32,
+      "HP_EPOCHS": 80,
+      "HP_LR": 0.0001,
+      "HP_D_MODEL": 96,
+      "HP_N_HEADS": 8,
+      "HP_E_LAYERS": 3,
+      "HP_D_LAYERS": 4,
+      "HP_D_FF": 256,
+      "HP_DROPOUT": 0.05,
+      "HP_FACTOR": 5,
+      "HP_SCHED_PATIENCE": 8,
+      "HP_EARLY_PATIENCE": 0.1,
+      "HP_USE_PCA": 1
+    },
+    "metrics": {
+      "R2": 0.3835275173187256,
+      "MSE": 80.93616485595703,
+      "RMSE": 8.996452904114879,
+      "MAE": 5.537829875946045,
+      "MAPE": 626.935863494873,
+      "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/TCNInformer/TCNInformer_Best_20260410_110801_SX_NEE(20150715-20190424)/TCNInformer_Best_20260410_110801_SX_NEE(20150715-20190424)_metrics.csv"
+    }
+  },
+  {
+    "trial": 7,
+    "hp": {
+      "HP_BATCH_SIZE": 96,
+      "HP_EPOCHS": 160,
+      "HP_LR": 0.0003,
+      "HP_D_MODEL": 64,
+      "HP_N_HEADS": 4,
+      "HP_E_LAYERS": 4,
+      "HP_D_LAYERS": 4,
+      "HP_D_FF": 128,
+      "HP_DROPOUT": 0.05,
+      "HP_FACTOR": 5,
+      "HP_SCHED_PATIENCE": 8,
+      "HP_EARLY_PATIENCE": 0.15,
+      "HP_USE_PCA": 0
+    },
+    "metrics": {
+      "R2": 0.3576992154121399,
+      "MSE": 84.32714080810547,
+      "RMSE": 9.182981041475882,
+      "MAE": 5.662703990936279,
+      "MAPE": 670.99928855896,
+      "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/TCNInformer/TCNInformer_Best_20260410_111743_SX_NEE(20150715-20190424)/TCNInformer_Best_20260410_111743_SX_NEE(20150715-20190424)_metrics.csv"
+    }
+  },
+  {
+    "trial": 8,
+    "hp": {
+      "HP_BATCH_SIZE": 96,
+      "HP_EPOCHS": 120,
+      "HP_LR": 0.0001,
+      "HP_D_MODEL": 64,
+      "HP_N_HEADS": 4,
+      "HP_E_LAYERS": 3,
+      "HP_D_LAYERS": 3,
+      "HP_D_FF": 256,
+      "HP_DROPOUT": 0.05,
+      "HP_FACTOR": 3,
+      "HP_SCHED_PATIENCE": 12,
+      "HP_EARLY_PATIENCE": 0.2,
+      "HP_USE_PCA": 1
+    },
+    "metrics": {
+      "R2": 0.3813568353652954,
+      "MSE": 81.22115325927734,
+      "RMSE": 9.012277917334623,
+      "MAE": 5.459948539733887,
+      "MAPE": 587.8350257873535,
+      "metrics_file": "/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/TCNInformer/TCNInformer_Best_20260410_112728_SX_NEE(20150715-20190424)/TCNInformer_Best_20260410_112728_SX_NEE(20150715-20190424)_metrics.csv"
+    }
+  }
+]

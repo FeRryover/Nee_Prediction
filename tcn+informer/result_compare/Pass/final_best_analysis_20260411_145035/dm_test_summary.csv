@@ -1,0 +1,3 @@
+﻿Dataset,Model_1,Model_2,DM_Statistic,p_value,Significant_0.05,Interpretation
+DT,ExoTST,LightGBM,-4.106566794535815,4.0158337238249686e-05,True,Model_1损失显著更低
+SX,TCNInformer,iTransformer,-0.5131819554954647,0.6078240470292333,False,差异不显著或Model_1不更优

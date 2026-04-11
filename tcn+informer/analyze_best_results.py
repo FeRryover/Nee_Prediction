@@ -1,3 +1,6 @@
+#在训练完的模型结果基础上，分析各模型在 DT/SX 上的表现，生成排名表、DM 检验结果、R2 对比图等。
+#主要针对result_best_DT 与 result_best_SX
+
 import json
 import math
 from datetime import datetime
@@ -12,10 +15,12 @@ import pandas as pd
 plt.rcParams["font.sans-serif"] = ["SimHei", "Microsoft YaHei", "Arial Unicode MS"]
 plt.rcParams["axes.unicode_minus"] = False
 
+# 定义总文件夹
+BASE_DIR = "result_best"  # 结果文件夹的前缀
 
 DATASET_DIRS = {
-    "DT": "result_best_DT",
-    "SX": "result_best_SX",
+    "DT": f"{BASE_DIR}/result_best_DT",
+    "SX": f"{BASE_DIR}/result_best_SX",
 }
 
 
@@ -239,7 +244,7 @@ def main() -> None:
     root = Path(__file__).resolve().parent
 
     run_ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    out_dir = root / "result" / "Compare" / f"final_best_analysis_{run_ts}"
+    out_dir = root / "result_compare" / f"Best_summary_{run_ts}"
     out_dir.mkdir(parents=True, exist_ok=True)
 
     all_dataset_rows = []

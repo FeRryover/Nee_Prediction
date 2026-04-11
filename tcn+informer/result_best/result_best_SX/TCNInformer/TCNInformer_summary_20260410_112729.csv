@@ -1,0 +1,2 @@
+﻿Model,Best_R2,Best_HP,HP_USE_PCA,Metrics_File
+TCNInformer,0.3851017951965332,"{""HP_BATCH_SIZE"": 96, ""HP_EPOCHS"": 120, ""HP_LR"": 0.0001, ""HP_D_MODEL"": 64, ""HP_N_HEADS"": 4, ""HP_E_LAYERS"": 2, ""HP_D_LAYERS"": 2, ""HP_D_FF"": 384, ""HP_DROPOUT"": 0.15, ""HP_FACTOR"": 3, ""HP_SCHED_PATIENCE"": 12, ""HP_EARLY_PATIENCE"": 0.1, ""HP_USE_PCA"": 1}",1,/root/autodl-tmp/NEE/Nee_Prediction/tcn+informer/result_best/TCNInformer/TCNInformer_Best_20260410_102009_SX_NEE(20150715-20190424)/TCNInformer_Best_20260410_102009_SX_NEE(20150715-20190424)_metrics.csv

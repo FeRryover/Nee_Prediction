@@ -1,0 +1,2 @@
+﻿Model,Best_R2,Best_HP,HP_USE_PCA,Metrics_File
+ExoTST,0.4677085280418396,"{""HP_BATCH_SIZE"": 32, ""HP_EPOCHS"": 80, ""HP_LR"": 0.0002, ""HP_D_MODEL"": 128, ""HP_N_HEADS"": 4, ""HP_E_LAYERS"": 3, ""HP_D_FF"": 256, ""HP_DROPOUT"": 0.15, ""HP_SCHED_PATIENCE"": 8, ""HP_USE_PCA"": 1}",1,/root/autodl-tmp/Nee_Prediction-main/tcn+informer/result_best/ExoTST/ExoTST_Best_20260410_143925_DT_NEE(20141201-20171130)/ExoTST_Best_20260410_143925_DT_NEE(20141201-20171130)_metrics.csv
